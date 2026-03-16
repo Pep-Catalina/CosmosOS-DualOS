@@ -1,2 +1,19 @@
-# Auto detect text files and perform LF normalization
+# Normalize line endings automatically
 * text=auto
+
+# C# source files
+*.cs text
+
+# Project and solution files
+*.csproj text
+*.sln text
+
+# Markdown documentation
+*.md text
+
+# Images (treat as binary)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
