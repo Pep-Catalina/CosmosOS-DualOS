@@ -44,19 +44,32 @@ namespace DualOS
             PrintCommand("shutdown reboot", "Restart the system");
 
             Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("Calculator Commands");
+            Console.ResetColor();
+
+            PrintCommand("calc add a b", "Add two numbers");
+            PrintCommand("calc sub a b", "Subtract two numbers");
+            PrintCommand("calc mul a b", "Multiply two numbers");
+            PrintCommand("calc div a b", "Divide two numbers");
+            PrintCommand("calc mod a b", "Modulo of two numbers");
+            PrintCommand("calc sqrt a", "Square root of a number");
+
+            Console.WriteLine();
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("Examples:");
             Console.ResetColor();
 
-            Console.WriteLine("  peek");
-            Console.WriteLine("  jump docs");
-            Console.WriteLine("  jump ..");
-            Console.WriteLine("  forge projects");
-            Console.WriteLine("  wipe projects");
-            Console.WriteLine("  read notes.txt");
-            Console.WriteLine("  say Hello DualOS");
+            Console.WriteLine("  guide");
+            Console.WriteLine("  origin");
             Console.WriteLine("  shutdown off");
             Console.WriteLine("  shutdown reboot");
+            Console.WriteLine("  calc add 5 3");
+            Console.WriteLine("  calc sub 9 2");
+            Console.WriteLine("  calc mul 4 6");
+            Console.WriteLine("  calc div 8 2");
+            Console.WriteLine("  calc mod 10 3");
+            Console.WriteLine("  calc sqrt 25");
 
             Console.WriteLine();
             Console.ForegroundColor = ConsoleColor.Gray;
@@ -69,9 +82,9 @@ namespace DualOS
             Console.ForegroundColor = ConsoleColor.Blue;
             Console.Write("  " + command);
 
-            if (command.Length < 18)
+            if (command.Length < 20)
             {
-                Console.Write(new string(' ', 18 - command.Length));
+                Console.Write(new string(' ', 20 - command.Length));
             }
             else
             {

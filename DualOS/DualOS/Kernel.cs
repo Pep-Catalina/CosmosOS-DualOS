@@ -27,9 +27,10 @@ namespace DualOS
                 return;
             }
 
-            input = input.ToLower();
+            string[] parts = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            string command = parts[0].ToLower();
 
-            switch (input)
+            switch (command)
             {
                 case "guide":
                     Consola.ShowHelp();
@@ -43,8 +44,42 @@ namespace DualOS
                     Console.WriteLine("DualOS v1.0");
                     break;
 
+                case "shutdown":
+                    HandleShutdown(parts);
+                    break;
+
+                case "calc":
+                    Calculadora.Execute(parts);
+                    break;
+
                 default:
                     Console.WriteLine("Unknown command. Type 'guide' for help.");
+                    break;
+            }
+        }
+
+        private void HandleShutdown(string[] parts)
+        {
+            if (parts.Length < 2)
+            {
+                Console.WriteLine("Usage: shutdown off | shutdown reboot");
+                return;
+            }
+
+            string option = parts[1].ToLower();
+
+            switch (option)
+            {
+                case "off":
+                    Sys.Power.Shutdown();
+                    break;
+
+                case "reboot":
+                    Sys.Power.Reboot();
+                    break;
+
+                default:
+                    Console.WriteLine("Invalid option. Use: shutdown off | shutdown reboot");
                     break;
             }
         }
