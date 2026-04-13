@@ -7,6 +7,7 @@ namespace DualOS
     {
         protected override void BeforeRun()
         {
+            Sys.KeyboardManager.SetKeyLayout(new Sys.ScanMaps.ESStandardLayout());
             Utilities.PrintDualOSLogo();
 
             Console.ForegroundColor = ConsoleColor.Green;
