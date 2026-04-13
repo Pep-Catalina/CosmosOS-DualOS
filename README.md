@@ -12,3 +12,14 @@ L’objectiu inicial és construir una base ordenada i escalable per començar e
 ![Logo de DualOS](assets/logo.png)
 
 > Pendent d’afegir la versió definitiva del logo.
+>
+
+## Configuració del teclat
+
+Per defecte, COSMOS OS utilitza el teclat americà. Per poder fer servir un teclat diferent (com l'espanyol), s'ha afegit la següent línia dins de la funció `BeforeRun()`:
+
+```csharp
+Sys.KeyboardManager.SetKeyLayout(new Sys.ScanMaps.ESStandardLayout());
+```
+
+Això permet configurar el layout del teclat segons les necessitats de l'usuari.
