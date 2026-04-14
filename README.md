@@ -116,7 +116,6 @@ Les millores previstes per a DualOS inclouen:
   - afegir menús interactius
   - crear un sistema de comandes propi
   - millorar l’organització modular del codi
-  - implementar gestió bàsica de fitxers
   - afegir configuració d’usuari i opcions del sistema
   - millorar la interfície visual
   - ampliar la documentació tècnica del projecte
