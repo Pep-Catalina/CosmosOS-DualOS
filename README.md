@@ -49,7 +49,7 @@ Compila el projecte des de Visual Studio.
 
 ## Execució
 
-Un cop compilat, el sistema es pot executar des de l’entorn de COSMOS, habitualment en màquina virtual o en l’entorn de prova configurat pel projecte.
+Un cop compilat, el sistema es pot executar des de l’entorn de COSMOS, habitualment en màquina virtual o en l’entorn de prova configurat pel projecte (VMware).
 
 
 ## Estructura del projecte
@@ -67,11 +67,46 @@ DualOS/
 └── DualOS.sln
 ````
 
+## Funcionalitats implementades
+
+### Sistema base
+- Prompt interactiu
+- guide, origin, clearvoid
+
+### Sistema
+- shutdown off / reboot
+
+### Calculadora
+- calc add, sub, mul, div, mod, sqrt
+
+### Sistema de fitxers
+- disks
+- peek
+- forge
+- wipe
+- write
+- read
+
+### Navegació
+- jump amb suport de rutes relatives i absolutes
+
+## Configuració del teclat
+Per defecte, COSMOS OS utilitza el teclat americà. Per poder fer servir un teclat diferent (com l'espanyol), s'ha afegit la següent línia dins de la funció BeforeRun():
+````
+Sys.KeyboardManager.SetKeyLayout(new
+Sys.ScanMaps.ESStandardLayout());
+````
+
+Això permet configurar el layout del teclat segons les necessitats de l'usuari.
+
 ## Llicència
 
-Pendent de definir.
+Aquest projecte està sota la llicència MIT. Consulta el fitxer LICENSE per a més informació.
 
-Si el repositori es publica de manera oberta, es recomana afegir una llicència com la MIT per permetre l’ús, modificació i distribució del projecte amb condicions clares.
+## Estat del projecte
+
+Actualment, DualOS es troba en una fase inicial de desenvolupament. Ja disposa d’una base funcional sobre COSMOS i d’una primera estructura de treball, però encara està en procés de creixement i definició de funcionalitats.
+<br>
 
 ## Roadmap o millores futures
 
@@ -87,17 +122,7 @@ Les millores previstes per a DualOS inclouen:
   - ampliar la documentació tècnica del projecte
   - afegir noves funcionalitats pròpies d’un sistema operatiu acadèmic
 
-<br>
 
-## Estat del projecte
 
-Actualment, DualOS es troba en una fase inicial de desenvolupament. Ja disposa d’una base funcional sobre COSMOS i d’una primera estructura de treball, però encara està en procés de creixement i definició de funcionalitats.
 
-## Configuració del teclat
-Per defecte, COSMOS OS utilitza el teclat americà. Per poder fer servir un teclat diferent (com l'espanyol), s'ha afegit la següent línia dins de la funció BeforeRun():
-````
-Sys.KeyboardManager.SetKeyLayout(new
-Sys.ScanMaps.ESStandardLayout());
-````
 
-Això permet configurar el layout del teclat segons les necessitats de l'usuari.
