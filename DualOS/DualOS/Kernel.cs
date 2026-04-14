@@ -1,4 +1,5 @@
 ﻿using System;
+using System;
 using Sys = Cosmos.System;
 
 namespace DualOS
@@ -11,6 +12,7 @@ namespace DualOS
             Utilities.PrintDualOSLogo();
 
             Console.ForegroundColor = ConsoleColor.Green;
+
             Console.WriteLine("DualOS started successfully!");
             Console.ResetColor();
         }
