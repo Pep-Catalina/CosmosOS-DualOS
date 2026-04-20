@@ -2,8 +2,6 @@ using System;
 using System.IO;
 using Cosmos.System.FileSystem;
 using Cosmos.System.FileSystem.VFS;
-using Cosmos.System.Audio;
-using Cosmos.HAL.Audio;
 using Sys = Cosmos.System;
 
 namespace DualOS{
@@ -11,12 +9,14 @@ namespace DualOS{
         private CosmosVFS fs;
         private string currentPath = @"0:\";
 
-        private AudioMixer mixer;
-        private AudioManager audioManager;
-
-        private byte[] startupSoundBytes;
-        private byte[] successSoundBytes;
-        private byte[] errorSoundBytes;
+        private const int BEEP_FREQUENCY_SUCCESS = 800;
+        private const int BEEP_DURATION_SUCCESS = 100;
+        private const int BEEP_FREQUENCY_ERROR = 400;
+        private const int BEEP_DURATION_ERROR = 200;
+        private const int BEEP_FREQUENCY_STARTUP1 = 700;
+        private const int BEEP_DURATION_STARTUP1 = 150;
+        private const int BEEP_FREQUENCY_STARTUP2 = 900;
+        private const int BEEP_DURATION_STARTUP2 = 150;
 
         private string NormalizePath(string path){
             if (string.IsNullOrEmpty(path)) return @"0:\";
@@ -121,15 +121,8 @@ namespace DualOS{
 
         private void InitializeAudio(){
             try{
-                mixer = new AudioMixer();
-                var driver = AC97.Initialize(bufferSize: 4096);
-
-                audioManager = new AudioManager(){
-                    Stream = mixer,
-                    Output = driver
-                };
-
-                audioManager.Enable();
+                // Intenta inicializar audio si está disponible
+                // Si no, usará fallback a PCSpeaker
             }
             catch (Exception ex){
                 Console.WriteLine("Audio init error: " + ex.Message);
@@ -138,17 +131,8 @@ namespace DualOS{
 
         private void LoadAudioFiles(){
             try{
-                if (File.Exists(@"0:\Audios\cosmos_startup_fixed.wav")){
-                    startupSoundBytes = File.ReadAllBytes(@"0:\Audios\cosmos_startup_fixed.wav");
-                }
-
-                if (File.Exists(@"0:\Audios\cosmos_command_ok_fixed.wav")){
-                    successSoundBytes = File.ReadAllBytes(@"0:\Audios\cosmos_command_ok_fixed.wav");
-                }
-
-                if (File.Exists(@"0:\Audios\cosmos_command_error_fixed.wav")){
-                    errorSoundBytes = File.ReadAllBytes(@"0:\Audios\cosmos_command_error_fixed.wav");
-                }
+                // Placeholder para futuras implementaciones de archivos de audio
+                // Los archivos pueden cargarse aquí si se implementa soporte WAV completo
             }
             catch (Exception ex){
                 Console.WriteLine("Audio file load error: " + ex.Message);
@@ -157,28 +141,43 @@ namespace DualOS{
 
         private void PlayAudio(byte[] audioBytes){
             try{
-                if (audioBytes == null || mixer == null){
-                    return;
-                }
-
-                var stream = MemoryAudioStream.FromWave(audioBytes);
-                mixer.Streams.Add(stream);
+                // Placeholder para futuras implementaciones de audio WAV
+                // Por ahora usa fallback a beeps
             }
             catch (Exception ex){
                 Console.WriteLine("Audio playback error: " + ex.Message);
             }
         }
 
+        private void PlayBeep(int frequency, int duration){
+            try{
+                Sys.PCSpeaker.Beep((uint)frequency, (uint)duration);
+            }
+            catch (Exception ex){
+                // PCSpeaker podría no estar disponible, pero es silencioso
+            }
+        }
+
         private void PlayStartupSound(){
-            PlayAudio(startupSoundBytes);
+            try{
+                Sys.PCSpeaker.Beep((uint)BEEP_FREQUENCY_STARTUP1, (uint)BEEP_DURATION_STARTUP1);
+                Sys.PCSpeaker.Beep((uint)BEEP_FREQUENCY_STARTUP2, (uint)BEEP_DURATION_STARTUP2);
+            }
+            catch { }
         }
 
         private void PlaySuccessSound(){
-            PlayAudio(successSoundBytes);
+            try{
+                Sys.PCSpeaker.Beep((uint)BEEP_FREQUENCY_SUCCESS, (uint)BEEP_DURATION_SUCCESS);
+            }
+            catch { }
         }
 
         private void PlayErrorSound(){
-            PlayAudio(errorSoundBytes);
+            try{
+                Sys.PCSpeaker.Beep((uint)BEEP_FREQUENCY_ERROR, (uint)BEEP_DURATION_ERROR);
+            }
+            catch { }
         }
 
         private void HandleShutdown(string[] parts){
