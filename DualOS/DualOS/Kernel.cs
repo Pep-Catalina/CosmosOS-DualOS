@@ -9,6 +9,13 @@ namespace DualOS{
         private CosmosVFS fs;
         private string currentPath = @"0:\";
 
+        private string NormalizePath(string path){
+            if (string.IsNullOrEmpty(path)) return @"0:\";
+            path = path.Replace('/', '\\');
+            if (!path.EndsWith(@"\")) path += @"\";
+            return path;
+        }
+
         protected override void BeforeRun(){
             fs = new CosmosVFS();
             VFSManager.RegisterVFS(fs);
@@ -126,7 +133,22 @@ namespace DualOS{
 
                 foreach (var disk in disks)
                 {
-                    Console.WriteLine("Disk: " + disk.Name);
+                    try
+                    {
+                        string diskInfo = "Disk: 0:\\";
+                        if (disk.Partitions != null && disk.Partitions.Count > 0)
+                        {
+                            foreach (var partition in disk.Partitions)
+                            {
+                                diskInfo += " Partition: " + partition.RootPath;
+                            }
+                        }
+                        Console.WriteLine(diskInfo);
+                    }
+                    catch
+                    {
+                        Console.WriteLine("Disk: Available");
+                    }
                 }
             }
             catch (Exception ex)
@@ -181,7 +203,15 @@ namespace DualOS{
                 return;
             }
             try{
-                string path = Path.Combine(currentPath, parts[1]);
+                string dirName = parts[1];
+                string path = currentPath + dirName;
+                path = NormalizePath(path);
+
+                if (Directory.Exists(path)){
+                    Console.WriteLine("Directory already exists.");
+                    return;
+                }
+
                 Directory.CreateDirectory(path);
                 Console.WriteLine("Directory created: " + path);
             }
@@ -196,14 +226,16 @@ namespace DualOS{
                 return;
             }
             try{
-                string path = Path.Combine(currentPath, parts[1]);
+                string dirName = parts[1];
+                string path = currentPath + dirName;
+                path = NormalizePath(path);
 
                 if (!Directory.Exists(path)){
                     Console.WriteLine("Directory does not exist.");
                     return;
                 }
 
-                Directory.Delete(path);
+                Directory.Delete(path, true);
                 Console.WriteLine("Directory deleted: " + path);
             }
             catch (Exception ex){
@@ -219,10 +251,19 @@ namespace DualOS{
 
             try{
                 string fileName = parts[1];
-                string path = Path.Combine(currentPath, fileName);
+                string path = currentPath + fileName;
+                path = NormalizePath(path).TrimEnd('\\');
 
-                int textStartIndex = fullInput.IndexOf(fileName) + fileName.Length + 1;
-                string content = fullInput.Substring(textStartIndex);
+                int writeIndex = fullInput.IndexOf("write");
+                int firstSpaceAfterWrite = fullInput.IndexOf(' ', writeIndex);
+                int fileNameStart = fullInput.IndexOf(fileName, firstSpaceAfterWrite);
+                int contentStart = fileNameStart + fileName.Length;
+
+                if (contentStart < fullInput.Length && fullInput[contentStart] == ' '){
+                    contentStart++;
+                }
+
+                string content = contentStart < fullInput.Length ? fullInput.Substring(contentStart) : "";
 
                 File.WriteAllText(path, content);
                 Console.WriteLine("File written: " + path);
@@ -238,7 +279,9 @@ namespace DualOS{
                 return;
             }
             try{
-                string path = Path.Combine(currentPath, parts[1]);
+                string fileName = parts[1];
+                string path = currentPath + fileName;
+                path = NormalizePath(path).TrimEnd('\\');
 
                 if (!File.Exists(path)){
                     Console.WriteLine("File does not exist.");
@@ -264,51 +307,51 @@ namespace DualOS{
                 string targetPath = parts[1];
                 string newPath;
 
-                // Ruta absoluta
-                if (targetPath.Contains(@":\")){
+                if (targetPath.Contains(@":")){
                     newPath = targetPath;
                 }
                 else{
-                    // Ruta relativa respecto al directorio actual
-                    newPath = Path.Combine(currentPath, targetPath);
+                    newPath = currentPath + targetPath;
                 }
 
-                // Normalizar separadores
                 newPath = newPath.Replace('/', '\\');
 
-                // Resolver manualmente . y ..
                 string[] rawParts = newPath.Split('\\', StringSplitOptions.RemoveEmptyEntries);
                 System.Collections.Generic.List<string> cleanParts = new System.Collections.Generic.List<string>();
 
                 foreach (string part in rawParts){
-                    if (part == "."){
+                    if (part == ".")
+                    {
                         continue;
                     }
-                    else if (part == ".."){
-                        if (cleanParts.Count > 1){
+                    else if (part == "..")
+                    {
+                        if (cleanParts.Count > 1)
+                        {
                             cleanParts.RemoveAt(cleanParts.Count - 1);
                         }
                     }
-                    else{
+                    else
+                    {
                         cleanParts.Add(part);
                     }
                 }
 
-                // Reconstruir ruta
-                if (cleanParts.Count == 0){
+                if (cleanParts.Count == 0)
+                {
                     newPath = @"0:\";
                 }
-                else{
+                else
+                {
                     newPath = cleanParts[0] + @"\";
-                    for (int i = 1; i < cleanParts.Count; i++){
+                    for (int i = 1; i < cleanParts.Count; i++)
+                    {
                         newPath += cleanParts[i] + @"\";
                     }
                 }
 
-                // Asegurar que termina en '\'
-                if (!newPath.EndsWith(@"\")){
-                    newPath += @"\";
-                }
+                newPath = NormalizePath(newPath);
+
                 if (!Directory.Exists(newPath)){
                     Console.WriteLine("Directory does not exist: " + newPath);
                     return;
