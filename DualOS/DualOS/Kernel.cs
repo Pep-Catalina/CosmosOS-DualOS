@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using Cosmos.System.FileSystem;
 using Cosmos.System.FileSystem.VFS;
@@ -23,6 +23,8 @@ namespace DualOS{
             Sys.KeyboardManager.SetKeyLayout(new Sys.ScanMaps.ESStandardLayout());
             Utilities.PrintDualOSLogo();
 
+            StartupSound();
+
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("DualOS started successfully!");
             Console.ResetColor();
@@ -45,14 +47,17 @@ namespace DualOS{
             switch (command){
                 case "guide":
                     Consola.ShowHelp();
+                    SuccessSound();
                     break;
 
                 case "clearvoid":
                     Console.Clear();
+                    SuccessSound();
                     break;
 
                 case "origin":
                     Console.WriteLine("DualOS v1.0");
+                    SuccessSound();
                     break;
 
                 case "shutdown":
@@ -61,14 +66,17 @@ namespace DualOS{
 
                 case "calc":
                     Calculadora.Execute(parts);
+                    SuccessSound();
                     break;
 
                 case "disks":
                     ShowDisks();
+                    SuccessSound();
                     break;
 
                 case "peek":
                     PeekCurrentDirectory();
+                    SuccessSound();
                     break;
 
                 case "forge":
@@ -93,13 +101,44 @@ namespace DualOS{
 
                 default:
                     Console.WriteLine("Unknown command. Type 'guide' for help.");
+                    ErrorSound();
                     break;
+            }
+        }
+
+        private void StartupSound(){
+            try{
+                Console.Beep(523, 120);
+                Console.Beep(659, 140);
+                Console.Beep(784, 180);
+                Console.Beep(1046, 260);
+            }
+            catch{
+            }
+        }
+
+        private void SuccessSound(){
+            try{
+                Console.Beep(740, 80);
+                Console.Beep(988, 130);
+            }
+            catch{
+            }
+        }
+
+        private void ErrorSound(){
+            try{
+                Console.Beep(440, 110);
+                Console.Beep(311, 180);
+            }
+            catch{
             }
         }
 
         private void HandleShutdown(string[] parts){
             if (parts.Length < 2){
                 Console.WriteLine("Usage: shutdown off | shutdown reboot");
+                ErrorSound();
                 return;
             }
 
@@ -107,15 +146,18 @@ namespace DualOS{
 
             switch (option){
                 case "off":
+                    SuccessSound();
                     Sys.Power.Shutdown();
                     break;
 
                 case "reboot":
+                    SuccessSound();
                     Sys.Power.Reboot();
                     break;
 
                 default:
                     Console.WriteLine("Invalid option. Use: shutdown off | shutdown reboot");
+                    ErrorSound();
                     break;
             }
         }
@@ -126,16 +168,15 @@ namespace DualOS{
 
                 if (disks == null || disks.Count == 0){
                     Console.WriteLine("No disks found.");
+                    ErrorSound();
                     return;
                 }
 
                 foreach (var disk in disks){
-                    try
-                    {
+                    try{
                         string diskInfo = "Disk: 0:\\";
                         if (disk.Partitions != null && disk.Partitions.Count > 0){
-                            foreach (var partition in disk.Partitions)
-                            {
+                            foreach (var partition in disk.Partitions){
                                 diskInfo += " Partition: " + partition.RootPath;
                             }
                         }
@@ -148,6 +189,7 @@ namespace DualOS{
             }
             catch (Exception ex){
                 Console.WriteLine("Error showing disks: " + ex.Message);
+                ErrorSound();
             }
         }
 
@@ -163,8 +205,7 @@ namespace DualOS{
                     Console.WriteLine("  (none)");
                 }
                 else{
-                    foreach (string dir in directories)
-                    {
+                    foreach (string dir in directories){
                         Console.WriteLine("  [DIR] " + Path.GetFileName(dir));
                     }
                 }
@@ -174,20 +215,21 @@ namespace DualOS{
                     Console.WriteLine("  (none)");
                 }
                 else{
-                    foreach (string file in files)
-                    {
+                    foreach (string file in files){
                         Console.WriteLine("  " + Path.GetFileName(file));
                     }
                 }
             }
             catch (Exception ex){
                 Console.WriteLine("Error listing directory: " + ex.Message);
+                ErrorSound();
             }
         }
 
         private void CreateDirectory(string[] parts){
             if (parts.Length < 2){
                 Console.WriteLine("Usage: forge <directory_name>");
+                ErrorSound();
                 return;
             }
             try{
@@ -197,20 +239,24 @@ namespace DualOS{
 
                 if (Directory.Exists(path)){
                     Console.WriteLine("Directory already exists.");
+                    ErrorSound();
                     return;
                 }
 
                 Directory.CreateDirectory(path);
                 Console.WriteLine("Directory created: " + path);
+                SuccessSound();
             }
             catch (Exception ex){
                 Console.WriteLine("Error creating directory: " + ex.Message);
+                ErrorSound();
             }
         }
 
         private void DeleteDirectory(string[] parts){
             if (parts.Length < 2){
                 Console.WriteLine("Usage: wipe <directory_name>");
+                ErrorSound();
                 return;
             }
             try{
@@ -220,20 +266,24 @@ namespace DualOS{
 
                 if (!Directory.Exists(path)){
                     Console.WriteLine("Directory does not exist.");
+                    ErrorSound();
                     return;
                 }
 
                 Directory.Delete(path, true);
                 Console.WriteLine("Directory deleted: " + path);
+                SuccessSound();
             }
             catch (Exception ex){
                 Console.WriteLine("Error deleting directory: " + ex.Message);
+                ErrorSound();
             }
         }
 
         private void WriteFile(string[] parts, string fullInput){
             if (parts.Length < 3){
                 Console.WriteLine("Usage: write <file_name> <text>");
+                ErrorSound();
                 return;
             }
 
@@ -248,105 +298,4 @@ namespace DualOS{
                 int contentStart = fileNameStart + fileName.Length;
 
                 if (contentStart < fullInput.Length && fullInput[contentStart] == ' '){
-                    contentStart++;
-                }
-
-                string content = contentStart < fullInput.Length ? fullInput.Substring(contentStart) : "";
-
-                File.WriteAllText(path, content);
-                Console.WriteLine("File written: " + path);
-            }
-            catch (Exception ex){
-                Console.WriteLine("Error writing file: " + ex.Message);
-            }
-        }
-
-        private void ReadFile(string[] parts){
-            if (parts.Length < 2){
-                Console.WriteLine("Usage: read <file_name>");
-                return;
-            }
-            try{
-                string fileName = parts[1];
-                string path = currentPath + fileName;
-                path = NormalizePath(path).TrimEnd('\\');
-
-                if (!File.Exists(path)){
-                    Console.WriteLine("File does not exist.");
-                    return;
-                }
-
-                string content = File.ReadAllText(path);
-                Console.WriteLine("Content of " + path + ":");
-                Console.WriteLine(content);
-            }
-            catch (Exception ex){
-                Console.WriteLine("Error reading file: " + ex.Message);
-            }
-        }
-
-        private void ChangeDirectory(string[] parts){
-            if (parts.Length < 2){
-                Console.WriteLine("Usage: jump <path>");
-                return;
-            }
-            try{
-                string targetPath = parts[1];
-                string newPath;
-
-                if (targetPath.Contains(@":")){
-                    newPath = targetPath;
-                }
-                else{
-                    newPath = currentPath + targetPath;
-                }
-
-                newPath = newPath.Replace('/', '\\');
-
-                string[] rawParts = newPath.Split('\\', StringSplitOptions.RemoveEmptyEntries);
-                System.Collections.Generic.List<string> cleanParts = new System.Collections.Generic.List<string>();
-
-                foreach (string part in rawParts){
-                    if (part == "."){
-                        continue;
-                    }
-                    else if (part == "..")
-                    {
-                        if (cleanParts.Count > 1)
-                        {
-                            cleanParts.RemoveAt(cleanParts.Count - 1);
-                        }
-                    }
-                    else
-                    {
-                        cleanParts.Add(part);
-                    }
-                }
-
-                if (cleanParts.Count == 0){
-                    newPath = @"0:\";
-                }
-                else{
-                    newPath = cleanParts[0] + @"\";
-                    for (int i = 1; i < cleanParts.Count; i++)
-                    {
-                        newPath += cleanParts[i] + @"\";
-                    }
-                }
-
-                newPath = NormalizePath(newPath);
-
-                if (!Directory.Exists(newPath)){
-                    Console.WriteLine("Directory does not exist: " + newPath);
-                    return;
-                }
-
-                currentPath = newPath;
-                Console.WriteLine("Current directory: " + currentPath);
-            }
-            catch (Exception ex){
-                Console.WriteLine("Error changing directory: " + ex.Message);
-            }
-        }
-    }
-}
+                    content
