@@ -29,8 +29,6 @@ namespace DualOS{
 
             PrintCommand("guide", "Show this help screen");
             PrintCommand("origin", "Show OS name and version");
-            PrintCommand("pulse", "[TODO] Show available and total memory");
-            PrintCommand("uptick", "[TODO] Show system uptime");
 
             Console.WriteLine();
             Console.ForegroundColor = ConsoleColor.Yellow;
@@ -38,7 +36,6 @@ namespace DualOS{
             Console.ResetColor();
 
             PrintCommand("clearvoid", "Clear the screen");
-            PrintCommand("say <text>", "[TODO] Print text to the screen");
             PrintCommand("shutdown off", "Power off the system");
             PrintCommand("shutdown reboot", "Restart the system");
 
@@ -66,7 +63,6 @@ namespace DualOS{
             Console.WriteLine("  read hola.txt");
             Console.WriteLine("  wipe test");
             Console.WriteLine("  jump docs");
-            Console.WriteLine("  say Hello DualOS");
             Console.WriteLine("  shutdown off");
             Console.WriteLine("  calc add 5 3");
 
