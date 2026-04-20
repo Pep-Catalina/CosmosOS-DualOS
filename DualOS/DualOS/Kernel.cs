@@ -121,23 +121,19 @@ namespace DualOS{
         }
 
         private void ShowDisks(){
-            try
-            {
+            try{
                 var disks = VFSManager.GetDisks();
 
-                if (disks == null || disks.Count == 0)
-                {
+                if (disks == null || disks.Count == 0){
                     Console.WriteLine("No disks found.");
                     return;
                 }
 
-                foreach (var disk in disks)
-                {
+                foreach (var disk in disks){
                     try
                     {
                         string diskInfo = "Disk: 0:\\";
-                        if (disk.Partitions != null && disk.Partitions.Count > 0)
-                        {
+                        if (disk.Partitions != null && disk.Partitions.Count > 0){
                             foreach (var partition in disk.Partitions)
                             {
                                 diskInfo += " Partition: " + partition.RootPath;
@@ -145,33 +141,28 @@ namespace DualOS{
                         }
                         Console.WriteLine(diskInfo);
                     }
-                    catch
-                    {
+                    catch{
                         Console.WriteLine("Disk: Available");
                     }
                 }
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex){
                 Console.WriteLine("Error showing disks: " + ex.Message);
             }
         }
 
         private void PeekCurrentDirectory(){
-            try
-            {
+            try{
                 string[] directories = Directory.GetDirectories(currentPath);
                 string[] files = Directory.GetFiles(currentPath);
 
                 Console.WriteLine("Current path: " + currentPath);
                 Console.WriteLine("Directories:");
 
-                if (directories.Length == 0)
-                {
+                if (directories.Length == 0){
                     Console.WriteLine("  (none)");
                 }
-                else
-                {
+                else{
                     foreach (string dir in directories)
                     {
                         Console.WriteLine("  [DIR] " + Path.GetFileName(dir));
@@ -179,20 +170,17 @@ namespace DualOS{
                 }
 
                 Console.WriteLine("Files:");
-                if (files.Length == 0)
-                {
+                if (files.Length == 0){
                     Console.WriteLine("  (none)");
                 }
-                else
-                {
+                else{
                     foreach (string file in files)
                     {
                         Console.WriteLine("  " + Path.GetFileName(file));
                     }
                 }
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex){
                 Console.WriteLine("Error listing directory: " + ex.Message);
             }
         }
@@ -302,8 +290,7 @@ namespace DualOS{
                 Console.WriteLine("Usage: jump <path>");
                 return;
             }
-            try
-            {
+            try{
                 string targetPath = parts[1];
                 string newPath;
 
@@ -320,8 +307,7 @@ namespace DualOS{
                 System.Collections.Generic.List<string> cleanParts = new System.Collections.Generic.List<string>();
 
                 foreach (string part in rawParts){
-                    if (part == ".")
-                    {
+                    if (part == "."){
                         continue;
                     }
                     else if (part == "..")
@@ -337,12 +323,10 @@ namespace DualOS{
                     }
                 }
 
-                if (cleanParts.Count == 0)
-                {
+                if (cleanParts.Count == 0){
                     newPath = @"0:\";
                 }
-                else
-                {
+                else{
                     newPath = cleanParts[0] + @"\";
                     for (int i = 1; i < cleanParts.Count; i++)
                     {
