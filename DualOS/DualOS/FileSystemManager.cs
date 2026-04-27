@@ -14,7 +14,7 @@ namespace DualOS
 
             foreach (var d in disks)
             {
-                Console.WriteLine("Disk: " + d.Name);
+                Console.WriteLine("Disk: " + d.ToString());
             }
         }
 

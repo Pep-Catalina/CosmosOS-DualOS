@@ -48,74 +48,120 @@ namespace DualOS
                 return;
             }
 
-            history.Add(input);
             ExecuteCommand(input);
+            history.Add(input);
         }
 
         private void ExecuteCommand(string input)
         {
             string[] parts = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+            if (parts.Length == 0)
+                return;
+
             string command = parts[0].ToLower();
 
-            switch (command)
+            try
             {
-                case "guide":
-                    Consola.ShowHelp();
-                    break;
+                switch (command)
+                {
+                    case "guide":
+                        Consola.ShowHelp();
+                        break;
 
-                case "clear":
-                    Console.Clear();
-                    break;
+                    case "clear":
+                        Console.Clear();
+                        break;
 
-                case "origin":
-                    Console.WriteLine("DualOS v1.0");
-                    break;
+                    case "history":
+                        history.Show();
+                        break;
 
-                case "shutdown":
-                    HandleShutdown(parts);
-                    break;
+                    case "origin":
+                        Console.WriteLine("DualOS v1.0");
+                        break;
 
-                case "calc":
-                    Calculadora.Execute(parts);
-                    break;
+                    case "shutdown":
+                        HandleShutdown(parts);
+                        break;
 
-                case "disks":
-                    fileSystem.ShowDisks();
-                    break;
+                    case "calc":
+                        Calculadora.Execute(parts);
+                        break;
 
-                case "peek":
-                    fileSystem.Peek();
-                    break;
+                    case "disks":
+                        fileSystem.ShowDisks();
+                        break;
 
-                case "forge":
-                    fileSystem.CreateDirectory(parts[1]);
-                    break;
+                    case "peek":
+                        fileSystem.Peek();
+                        break;
 
-                case "wipe":
-                    fileSystem.DeleteDirectory(parts[1]);
-                    break;
+                    case "forge":
+                        if (parts.Length < 2)
+                        {
+                            Console.WriteLine("Usage: forge <directory_name>");
+                        }
+                        else
+                        {
+                            fileSystem.CreateDirectory(parts[1]);
+                        }
+                        break;
 
-                case "write":
-                    string file = parts[1];
-                    string content = input.Substring(input.IndexOf(file) + file.Length + 1);
-                    fileSystem.WriteFile(file, content);
-                    break;
+                    case "wipe":
+                        if (parts.Length < 2)
+                        {
+                            Console.WriteLine("Usage: wipe <directory_name>");
+                        }
+                        else
+                        {
+                            fileSystem.DeleteDirectory(parts[1]);
+                        }
+                        break;
 
-                case "read":
-                    fileSystem.ReadFile(parts[1]);
-                    break;
+                    case "write":
+                        if (parts.Length < 2)
+                        {
+                            Console.WriteLine("Usage: write <filename> <content>");
+                        }
+                        else
+                        {
+                            string file = parts[1];
+                            string content = input.Substring(input.IndexOf(file) + file.Length + 1);
+                            fileSystem.WriteFile(file, content);
+                        }
+                        break;
 
-                case "jump":
-                    fileSystem.ChangeDirectory(parts[1]);
-                    break;
+                    case "read":
+                        if (parts.Length < 2)
+                        {
+                            Console.WriteLine("Usage: read <filename>");
+                        }
+                        else
+                        {
+                            fileSystem.ReadFile(parts[1]);
+                        }
+                        break;
 
-                case "history":
-                    history.Show();
-                    break;
+                    case "jump":
+                        if (parts.Length < 2)
+                        {
+                            Console.WriteLine("Usage: jump <directory_path>");
+                        }
+                        else
+                        {
+                            fileSystem.ChangeDirectory(parts[1]);
+                        }
+                        break;
 
-                default:
-                    Console.WriteLine("Unknown command. Type 'guide' for help.");
-                    break;
+                    default:
+                        Console.WriteLine("Unknown command. Type 'guide' for help.");
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error executing command: {ex.Message}");
             }
         }
 
