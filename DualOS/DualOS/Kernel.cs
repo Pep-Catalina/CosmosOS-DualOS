@@ -1,76 +1,74 @@
 using System;
-using System.IO;
 using Cosmos.System.FileSystem;
 using Cosmos.System.FileSystem.VFS;
 using Sys = Cosmos.System;
 
-namespace DualOS{
-    public class Kernel : Sys.Kernel{
+namespace DualOS
+{
+    public class Kernel : Sys.Kernel
+    {
         private CosmosVFS fs;
-        private string currentPath = @"0:\";
+        private FileSystemManager fileSystem = new FileSystemManager();
+        private CommandHistory history = new CommandHistory();
 
-        private const int BEEP_FREQUENCY_SUCCESS = 800;
-        private const int BEEP_DURATION_SUCCESS = 100;
-        private const int BEEP_FREQUENCY_ERROR = 400;
-        private const int BEEP_DURATION_ERROR = 200;
-        private const int BEEP_FREQUENCY_STARTUP1 = 700;
-        private const int BEEP_DURATION_STARTUP1 = 150;
-        private const int BEEP_FREQUENCY_STARTUP2 = 900;
-        private const int BEEP_DURATION_STARTUP2 = 150;
-
-        private string NormalizePath(string path){
-            if (string.IsNullOrEmpty(path)) return @"0:\";
-            path = path.Replace('/', '\\');
-            if (!path.EndsWith(@"\")) path += @"\";
-            return path;
-        }
-
-        protected override void BeforeRun(){
+        protected override void BeforeRun()
+        {
             fs = new CosmosVFS();
             VFSManager.RegisterVFS(fs);
 
             Sys.KeyboardManager.SetKeyLayout(new Sys.ScanMaps.ESStandardLayout());
-
-            InitializeAudio();
-            LoadAudioFiles();
-
             Utilities.PrintDualOSLogo();
-
-            PlayStartupSound();
 
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("DualOS started successfully!");
             Console.ResetColor();
         }
 
-        protected override void Run(){
+        protected override void Run()
+        {
             Console.ForegroundColor = ConsoleColor.White;
-            Console.Write(currentPath + "> ");
+            Console.Write(fileSystem.CurrentPath + "> ");
             Console.ResetColor();
 
             string input = Console.ReadLine();
 
-            if (input == null || input.Trim() == ""){
+            if (string.IsNullOrWhiteSpace(input))
+                return;
+
+            // Ejecutar historial
+            if (input.StartsWith("!"))
+            {
+                string cmd = history.GetCommand(input);
+                if (cmd != null)
+                {
+                    Console.WriteLine("Executing: " + cmd);
+                    ExecuteCommand(cmd);
+                    history.Add(cmd);
+                }
                 return;
             }
 
+            history.Add(input);
+            ExecuteCommand(input);
+        }
+
+        private void ExecuteCommand(string input)
+        {
             string[] parts = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
             string command = parts[0].ToLower();
 
-            switch (command){
+            switch (command)
+            {
                 case "guide":
                     Consola.ShowHelp();
-                    PlaySuccessSound();
                     break;
 
-                case "clearvoid":
+                case "clear":
                     Console.Clear();
-                    PlaySuccessSound();
                     break;
 
                 case "origin":
                     Console.WriteLine("DualOS v1.0");
-                    PlaySuccessSound();
                     break;
 
                 case "shutdown":
@@ -79,378 +77,65 @@ namespace DualOS{
 
                 case "calc":
                     Calculadora.Execute(parts);
-                    PlaySuccessSound();
                     break;
 
                 case "disks":
-                    ShowDisks();
-                    PlaySuccessSound();
+                    fileSystem.ShowDisks();
                     break;
 
                 case "peek":
-                    PeekCurrentDirectory();
-                    PlaySuccessSound();
+                    fileSystem.Peek();
                     break;
 
                 case "forge":
-                    CreateDirectory(parts);
+                    fileSystem.CreateDirectory(parts[1]);
                     break;
 
                 case "wipe":
-                    DeleteDirectory(parts);
+                    fileSystem.DeleteDirectory(parts[1]);
                     break;
 
                 case "write":
-                    WriteFile(parts, input);
+                    string file = parts[1];
+                    string content = input.Substring(input.IndexOf(file) + file.Length + 1);
+                    fileSystem.WriteFile(file, content);
                     break;
 
                 case "read":
-                    ReadFile(parts);
+                    fileSystem.ReadFile(parts[1]);
                     break;
 
                 case "jump":
-                    ChangeDirectory(parts);
+                    fileSystem.ChangeDirectory(parts[1]);
+                    break;
+
+                case "history":
+                    history.Show();
                     break;
 
                 default:
                     Console.WriteLine("Unknown command. Type 'guide' for help.");
-                    PlayErrorSound();
                     break;
             }
         }
 
-        private void InitializeAudio(){
-            try{
-                // Intenta inicializar audio si está disponible
-                // Si no, usará fallback a PCSpeaker
-            }
-            catch (Exception ex){
-                Console.WriteLine("Audio init error: " + ex.Message);
-            }
-        }
-
-        private void LoadAudioFiles(){
-            try{
-                // Placeholder para futuras implementaciones de archivos de audio
-                // Los archivos pueden cargarse aquí si se implementa soporte WAV completo
-            }
-            catch (Exception ex){
-                Console.WriteLine("Audio file load error: " + ex.Message);
-            }
-        }
-
-        private void PlayAudio(byte[] audioBytes){
-            try{
-                // Placeholder para futuras implementaciones de audio WAV
-                // Por ahora usa fallback a beeps
-            }
-            catch (Exception ex){
-                Console.WriteLine("Audio playback error: " + ex.Message);
-            }
-        }
-
-        private void PlayBeep(int frequency, int duration){
-            try{
-                Sys.PCSpeaker.Beep((uint)frequency, (uint)duration);
-            }
-            catch (Exception ex){
-                // PCSpeaker podría no estar disponible, pero es silencioso
-            }
-        }
-
-        private void PlayStartupSound(){
-            try{
-                Sys.PCSpeaker.Beep((uint)BEEP_FREQUENCY_STARTUP1, (uint)BEEP_DURATION_STARTUP1);
-                Sys.PCSpeaker.Beep((uint)BEEP_FREQUENCY_STARTUP2, (uint)BEEP_DURATION_STARTUP2);
-            }
-            catch { }
-        }
-
-        private void PlaySuccessSound(){
-            try{
-                Sys.PCSpeaker.Beep((uint)BEEP_FREQUENCY_SUCCESS, (uint)BEEP_DURATION_SUCCESS);
-            }
-            catch { }
-        }
-
-        private void PlayErrorSound(){
-            try{
-                Sys.PCSpeaker.Beep((uint)BEEP_FREQUENCY_ERROR, (uint)BEEP_DURATION_ERROR);
-            }
-            catch { }
-        }
-
-        private void HandleShutdown(string[] parts){
-            if (parts.Length < 2){
+        private void HandleShutdown(string[] parts)
+        {
+            if (parts.Length < 2)
+            {
                 Console.WriteLine("Usage: shutdown off | shutdown reboot");
-                PlayErrorSound();
                 return;
             }
 
-            string option = parts[1].ToLower();
-
-            switch (option){
+            switch (parts[1].ToLower())
+            {
                 case "off":
-                    PlaySuccessSound();
                     Sys.Power.Shutdown();
                     break;
 
                 case "reboot":
-                    PlaySuccessSound();
                     Sys.Power.Reboot();
                     break;
-
-                default:
-                    Console.WriteLine("Invalid option. Use: shutdown off | shutdown reboot");
-                    PlayErrorSound();
-                    break;
-            }
-        }
-
-        private void ShowDisks(){
-            try{
-                var disks = VFSManager.GetDisks();
-
-                if (disks == null || disks.Count == 0){
-                    Console.WriteLine("No disks found.");
-                    PlayErrorSound();
-                    return;
-                }
-
-                foreach (var disk in disks){
-                    try{
-                        string diskInfo = "Disk: 0:\\";
-                        if (disk.Partitions != null && disk.Partitions.Count > 0){
-                            foreach (var partition in disk.Partitions){
-                                diskInfo += " Partition: " + partition.RootPath;
-                            }
-                        }
-                        Console.WriteLine(diskInfo);
-                    }
-                    catch{
-                        Console.WriteLine("Disk: Available");
-                    }
-                }
-            }
-            catch (Exception ex){
-                Console.WriteLine("Error showing disks: " + ex.Message);
-                PlayErrorSound();
-            }
-        }
-
-        private void PeekCurrentDirectory(){
-            try{
-                string[] directories = Directory.GetDirectories(currentPath);
-                string[] files = Directory.GetFiles(currentPath);
-
-                Console.WriteLine("Current path: " + currentPath);
-                Console.WriteLine("Directories:");
-
-                if (directories.Length == 0){
-                    Console.WriteLine("  (none)");
-                }
-                else{
-                    foreach (string dir in directories){
-                        Console.WriteLine("  [DIR] " + Path.GetFileName(dir));
-                    }
-                }
-
-                Console.WriteLine("Files:");
-                if (files.Length == 0){
-                    Console.WriteLine("  (none)");
-                }
-                else{
-                    foreach (string file in files){
-                        Console.WriteLine("  " + Path.GetFileName(file));
-                    }
-                }
-            }
-            catch (Exception ex){
-                Console.WriteLine("Error listing directory: " + ex.Message);
-                PlayErrorSound();
-            }
-        }
-
-        private void CreateDirectory(string[] parts){
-            if (parts.Length < 2){
-                Console.WriteLine("Usage: forge <directory_name>");
-                PlayErrorSound();
-                return;
-            }
-
-            try{
-                string dirName = parts[1];
-                string path = currentPath + dirName;
-                path = NormalizePath(path);
-
-                if (Directory.Exists(path)){
-                    Console.WriteLine("Directory already exists.");
-                    PlayErrorSound();
-                    return;
-                }
-
-                Directory.CreateDirectory(path);
-                Console.WriteLine("Directory created: " + path);
-                PlaySuccessSound();
-            }
-            catch (Exception ex){
-                Console.WriteLine("Error creating directory: " + ex.Message);
-                PlayErrorSound();
-            }
-        }
-
-        private void DeleteDirectory(string[] parts){
-            if (parts.Length < 2){
-                Console.WriteLine("Usage: wipe <directory_name>");
-                PlayErrorSound();
-                return;
-            }
-
-            try{
-                string dirName = parts[1];
-                string path = currentPath + dirName;
-                path = NormalizePath(path);
-
-                if (!Directory.Exists(path)){
-                    Console.WriteLine("Directory does not exist.");
-                    PlayErrorSound();
-                    return;
-                }
-
-                Directory.Delete(path, true);
-                Console.WriteLine("Directory deleted: " + path);
-                PlaySuccessSound();
-            }
-            catch (Exception ex){
-                Console.WriteLine("Error deleting directory: " + ex.Message);
-                PlayErrorSound();
-            }
-        }
-
-        private void WriteFile(string[] parts, string fullInput){
-            if (parts.Length < 3){
-                Console.WriteLine("Usage: write <file_name> <text>");
-                PlayErrorSound();
-                return;
-            }
-
-            try{
-                string fileName = parts[1];
-                string path = currentPath + fileName;
-                path = NormalizePath(path).TrimEnd('\\');
-
-                int writeIndex = fullInput.IndexOf("write");
-                int firstSpaceAfterWrite = fullInput.IndexOf(' ', writeIndex);
-                int fileNameStart = fullInput.IndexOf(fileName, firstSpaceAfterWrite);
-                int contentStart = fileNameStart + fileName.Length;
-
-                if (contentStart < fullInput.Length && fullInput[contentStart] == ' '){
-                    contentStart++;
-                }
-
-                string content = contentStart < fullInput.Length ? fullInput.Substring(contentStart) : "";
-
-                File.WriteAllText(path, content);
-                Console.WriteLine("File written: " + path);
-                PlaySuccessSound();
-            }
-            catch (Exception ex){
-                Console.WriteLine("Error writing file: " + ex.Message);
-                PlayErrorSound();
-            }
-        }
-
-        private void ReadFile(string[] parts){
-            if (parts.Length < 2){
-                Console.WriteLine("Usage: read <file_name>");
-                PlayErrorSound();
-                return;
-            }
-
-            try{
-                string fileName = parts[1];
-                string path = currentPath + fileName;
-                path = NormalizePath(path).TrimEnd('\\');
-
-                if (!File.Exists(path)){
-                    Console.WriteLine("File does not exist.");
-                    PlayErrorSound();
-                    return;
-                }
-
-                string content = File.ReadAllText(path);
-                Console.WriteLine("Content of " + path + ":");
-                Console.WriteLine(content);
-                PlaySuccessSound();
-            }
-            catch (Exception ex){
-                Console.WriteLine("Error reading file: " + ex.Message);
-                PlayErrorSound();
-            }
-        }
-
-        private void ChangeDirectory(string[] parts){
-            if (parts.Length < 2){
-                Console.WriteLine("Usage: jump <path>");
-                PlayErrorSound();
-                return;
-            }
-
-            try{
-                string targetPath = parts[1];
-                string newPath;
-
-                if (targetPath.Contains(@":")){
-                    newPath = targetPath;
-                }
-                else{
-                    newPath = currentPath + targetPath;
-                }
-
-                newPath = newPath.Replace('/', '\\');
-
-                string[] rawParts = newPath.Split('\\', StringSplitOptions.RemoveEmptyEntries);
-                System.Collections.Generic.List<string> cleanParts = new System.Collections.Generic.List<string>();
-
-                foreach (string part in rawParts){
-                    if (part == "."){
-                        continue;
-                    }
-                    else if (part == ".."){
-                        if (cleanParts.Count > 1){
-                            cleanParts.RemoveAt(cleanParts.Count - 1);
-                        }
-                    }
-                    else{
-                        cleanParts.Add(part);
-                    }
-                }
-
-                if (cleanParts.Count == 0){
-                    newPath = @"0:\";
-                }
-                else{
-                    newPath = cleanParts[0] + @"\";
-                    for (int i = 1; i < cleanParts.Count; i++){
-                        newPath += cleanParts[i] + @"\";
-                    }
-                }
-
-                newPath = NormalizePath(newPath);
-
-                if (!Directory.Exists(newPath)){
-                    Console.WriteLine("Directory does not exist: " + newPath);
-                    PlayErrorSound();
-                    return;
-                }
-
-                currentPath = newPath;
-                Console.WriteLine("Current directory: " + currentPath);
-                PlaySuccessSound();
-            }
-            catch (Exception ex){
-                Console.WriteLine("Error changing directory: " + ex.Message);
-                PlayErrorSound();
             }
         }
     }

@@ -1,8 +1,11 @@
 using System;
 
-namespace DualOS{
-    public static class Consola{
-        public static void ShowHelp(){
+namespace DualOS
+{
+    public static class Consola
+    {
+        public static void ShowHelp()
+        {
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("==============================================");
             Console.WriteLine("                DualOS Help                   ");
@@ -15,73 +18,65 @@ namespace DualOS{
             Console.ResetColor();
 
             PrintCommand("disks", "Show available disks");
-            PrintCommand("peek", "List directories and files in root (0:\\)");
-            PrintCommand("jump <path>", "[TODO] Change directory");
-            PrintCommand("forge <name>", "Create a directory");
-            PrintCommand("wipe <name>", "Delete an empty directory");
-            PrintCommand("write <file> <text>", "Create/write a file");
-            PrintCommand("read <file>", "Read a file");
+            PrintCommand("peek", "List directories and files");
+            PrintCommand("jump <path>", "Change directory");
+            PrintCommand("forge <name>", "Create directory");
+            PrintCommand("wipe <name>", "Delete directory");
+            PrintCommand("write <file> <text>", "Write file");
+            PrintCommand("read <file>", "Read file");
 
             Console.WriteLine();
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("System Information");
+            Console.WriteLine("System Commands");
             Console.ResetColor();
 
-            PrintCommand("guide", "Show this help screen");
-            PrintCommand("origin", "Show OS name and version");
+            PrintCommand("guide", "Show help");
+            PrintCommand("origin", "Show version");
+            PrintCommand("clearvoid", "Clear screen");
+            PrintCommand("shutdown off", "Shutdown system");
+            PrintCommand("shutdown reboot", "Restart system");
 
             Console.WriteLine();
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("Utility Commands");
+            Console.WriteLine("Calculator");
             Console.ResetColor();
 
-            PrintCommand("clearvoid", "Clear the screen");
-            PrintCommand("shutdown off", "Power off the system");
-            PrintCommand("shutdown reboot", "Restart the system");
+            PrintCommand("calc add a b", "Add numbers");
+            PrintCommand("calc sub a b", "Subtract");
+            PrintCommand("calc mul a b", "Multiply");
+            PrintCommand("calc div a b", "Divide");
+            PrintCommand("calc mod a b", "Modulo");
+            PrintCommand("calc sqrt a", "Square root");
 
             Console.WriteLine();
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("Calculator Commands");
+            Console.WriteLine("History");
             Console.ResetColor();
 
-            PrintCommand("calc add a b", "Add two numbers");
-            PrintCommand("calc sub a b", "Subtract two numbers");
-            PrintCommand("calc mul a b", "Multiply two numbers");
-            PrintCommand("calc div a b", "Divide two numbers");
-            PrintCommand("calc mod a b", "Modulo of two numbers");
-            PrintCommand("calc sqrt a", "Square root of a number");
+            PrintCommand("history", "Show last 5 commands");
+            PrintCommand("!n", "Execute command from history");
 
             Console.WriteLine();
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("Examples:");
             Console.ResetColor();
 
-            Console.WriteLine("  disks");
-            Console.WriteLine("  peek");
-            Console.WriteLine("  forge test");
-            Console.WriteLine("  write hola.txt Hola DualOS");
-            Console.WriteLine("  read hola.txt");
-            Console.WriteLine("  wipe test");
-            Console.WriteLine("  jump docs");
-            Console.WriteLine("  shutdown off");
+            Console.WriteLine("  history");
+            Console.WriteLine("  !0");
             Console.WriteLine("  calc add 5 3");
 
-            Console.WriteLine();
-            Console.ForegroundColor = ConsoleColor.Gray;
-            Console.WriteLine("Tip: all file operations currently use root path 0:\\");
-            Console.WriteLine("Commands marked with [TODO] are not implemented yet.");
             Console.ResetColor();
-         }   
+        }
 
-        private static void PrintCommand(string command, string description){
+        private static void PrintCommand(string command, string description)
+        {
             Console.ForegroundColor = ConsoleColor.Blue;
             Console.Write("  " + command);
 
-            if (command.Length < 25){
-                Console.Write(new string(' ', 25 - command.Length));}
-            else{
+            if (command.Length < 25)
+                Console.Write(new string(' ', 25 - command.Length));
+            else
                 Console.Write("  ");
-            }
 
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("- " + description);

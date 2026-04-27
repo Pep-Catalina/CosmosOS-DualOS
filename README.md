@@ -67,6 +67,19 @@ DualOS/
 └── DualOS.sln
 ````
 
+## Arquitectura del sistema
+
+El codi s'ha reorganitzat en diferents fitxers per millorar la seva llegibilitat i manteniment:
+
+- `Kernel.cs` → Control principal del sistema i execució de comandes
+- `FileSystemManager.cs` → Gestió del sistema de fitxers (VFS)
+- `CommandHistory.cs` → Gestió de la memòria de comandes
+- `Consola.cs` → Sistema d'ajuda (help)
+- `Calculadora.cs` → Operacions matemàtiques
+- `Utilities.cs` → Funcions auxiliars (logo, etc.)
+
+Aquesta separació permet una millor escalabilitat del sistema i facilita l'afegiment de noves funcionalitats.
+
 ## Funcionalitats implementades
 
 ### Sistema base
@@ -89,6 +102,13 @@ DualOS/
 
 ### Navegació
 - jump amb suport de rutes relatives i absolutes
+
+### Historial de comandes
+S'ha implementat un sistema de memòria de comandes que emmagatzema les últimes 5 comandes executades.
+
+Comandaments:
+- history → mostra les últimes comandes
+- !n → re-executa una comanda (ex: !0)
 
 ## Configuració del teclat
 Per defecte, COSMOS OS utilitza el teclat americà. Per poder fer servir un teclat diferent (com l'espanyol), s'ha afegit la següent línia dins de la funció BeforeRun():
