@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 
 namespace DualOS
 {
@@ -6,10 +7,14 @@ namespace DualOS
     {
         public static void Execute(string[] parts)
         {
+            Console.WriteLine(ExecuteToString(parts));
+        }
+
+        public static string ExecuteToString(string[] parts)
+        {
             if (parts.Length < 2)
             {
-                ShowUsage();
-                return;
+                return GetUsage();
             }
 
             string operation = parts[1].ToLower();
@@ -17,49 +22,41 @@ namespace DualOS
             switch (operation)
             {
                 case "add":
-                    DoBinaryOperation(parts, "+");
-                    break;
+                    return DoBinaryOperation(parts, "+");
 
                 case "sub":
-                    DoBinaryOperation(parts, "-");
-                    break;
+                    return DoBinaryOperation(parts, "-");
 
                 case "mul":
-                    DoBinaryOperation(parts, "*");
-                    break;
+                    return DoBinaryOperation(parts, "*");
 
                 case "div":
-                    DoBinaryOperation(parts, "/");
-                    break;
+                    return DoBinaryOperation(parts, "/");
 
                 case "mod":
-                    DoBinaryOperation(parts, "%");
-                    break;
+                    return DoBinaryOperation(parts, "%");
 
                 case "sqrt":
-                    DoSqrt(parts);
-                    break;
+                    return DoSqrt(parts);
 
                 default:
-                    Console.WriteLine("Unknown calc operation.");
-                    ShowUsage();
-                    break;
+                    return "Unknown calc operation.\n" + GetUsage();
             }
         }
 
-        private static void DoBinaryOperation(string[] parts, string op)
+        private static string DoBinaryOperation(string[] parts, string op)
         {
             if (parts.Length < 4)
             {
-                Console.WriteLine("This operation needs 2 numbers.");
-                ShowUsage();
-                return;
+                return "This operation needs 2 numbers.\n" + GetUsage();
             }
 
-            if (!double.TryParse(parts[2], out double num1) || !double.TryParse(parts[3], out double num2))
+            double num1;
+            double num2;
+
+            if (!double.TryParse(parts[2], out num1) || !double.TryParse(parts[3], out num2))
             {
-                Console.WriteLine("Invalid numbers.");
-                return;
+                return "Invalid numbers.";
             }
 
             double result = 0;
@@ -81,59 +78,60 @@ namespace DualOS
                 case "/":
                     if (num2 == 0)
                     {
-                        Console.WriteLine("Cannot divide by zero.");
-                        return;
+                        return "Cannot divide by zero.";
                     }
+
                     result = num1 / num2;
                     break;
 
                 case "%":
                     if (num2 == 0)
                     {
-                        Console.WriteLine("Cannot modulo by zero.");
-                        return;
+                        return "Cannot modulo by zero.";
                     }
+
                     result = num1 % num2;
                     break;
             }
 
-            Console.WriteLine("Result: " + result);
+            return "Result: " + result;
         }
 
-        private static void DoSqrt(string[] parts)
+        private static string DoSqrt(string[] parts)
         {
             if (parts.Length < 3)
             {
-                Console.WriteLine("sqrt needs 1 number.");
-                ShowUsage();
-                return;
+                return "sqrt needs 1 number.\n" + GetUsage();
             }
 
-            if (!double.TryParse(parts[2], out double num))
+            double num;
+
+            if (!double.TryParse(parts[2], out num))
             {
-                Console.WriteLine("Invalid number.");
-                return;
+                return "Invalid number.";
             }
 
             if (num < 0)
             {
-                Console.WriteLine("Cannot calculate square root of a negative number.");
-                return;
+                return "Cannot calculate square root of a negative number.";
             }
 
-            double result = Math.Sqrt(num);
-            Console.WriteLine("Result: " + result);
+            return "Result: " + Math.Sqrt(num);
         }
 
-        private static void ShowUsage()
+        private static string GetUsage()
         {
-            Console.WriteLine("Calculator usage:");
-            Console.WriteLine("  calc add 5 3");
-            Console.WriteLine("  calc sub 9 2");
-            Console.WriteLine("  calc mul 4 6");
-            Console.WriteLine("  calc div 8 2");
-            Console.WriteLine("  calc mod 10 3");
-            Console.WriteLine("  calc sqrt 25");
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendLine("Calculator usage:");
+            sb.AppendLine("  calc add 5 3");
+            sb.AppendLine("  calc sub 9 2");
+            sb.AppendLine("  calc mul 4 6");
+            sb.AppendLine("  calc div 8 2");
+            sb.AppendLine("  calc mod 10 3");
+            sb.AppendLine("  calc sqrt 25");
+
+            return sb.ToString();
         }
     }
 }

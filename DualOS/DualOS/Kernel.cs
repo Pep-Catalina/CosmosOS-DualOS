@@ -10,6 +10,9 @@ namespace DualOS
         private CosmosVFS fs;
         private FileSystemManager fileSystem = new FileSystemManager();
         private CommandHistory history = new CommandHistory();
+        private GraphicsManager graphics = new GraphicsManager();
+
+        private string inputBuffer = "";
 
         protected override void BeforeRun()
         {
@@ -17,47 +20,89 @@ namespace DualOS
             VFSManager.RegisterVFS(fs);
 
             Sys.KeyboardManager.SetKeyLayout(new Sys.ScanMaps.ESStandardLayout());
-            Utilities.PrintDualOSLogo();
 
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("DualOS started successfully!");
-            Console.ResetColor();
+            graphics.Initialize();
+            graphics.DrawWelcomeScreen();
+
+            Console.ReadKey(true);
+
+            graphics.AddOutput("DualOS started successfully.");
+            graphics.AddOutput("Type 'guide' to show available commands.");
+            graphics.DrawShell(fileSystem.CurrentPath, inputBuffer);
         }
 
         protected override void Run()
         {
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.Write(fileSystem.CurrentPath + "> ");
-            Console.ResetColor();
+            ConsoleKeyInfo key = Console.ReadKey(true);
 
-            string input = Console.ReadLine();
-
-            if (string.IsNullOrWhiteSpace(input))
-                return;
-
-            // Ejecutar historial
-            if (input.StartsWith("!"))
+            if (key.Key == ConsoleKey.Enter)
             {
-                string cmd = history.GetCommand(input);
-                if (cmd != null)
+                string commandInput = inputBuffer;
+                inputBuffer = "";
+
+                if (commandInput == null || commandInput.Trim() == "")
                 {
-                    Console.WriteLine("Executing: " + cmd);
-                    ExecuteCommand(cmd);
-                    history.Add(cmd);
+                    graphics.DrawShell(fileSystem.CurrentPath, inputBuffer);
+                    return;
                 }
+
+                graphics.AddOutput(fileSystem.CurrentPath + "> " + commandInput);
+
+                if (commandInput.StartsWith("!"))
+                {
+                    string cmd = history.GetCommand(commandInput);
+
+                    if (cmd != null)
+                    {
+                        graphics.AddOutput("Executing: " + cmd);
+                        string result = ExecuteCommand(cmd);
+                        graphics.AddOutput(result);
+                        history.Add(cmd);
+                    }
+                    else
+                    {
+                        graphics.AddOutput("Invalid history command.");
+                    }
+                }
+                else
+                {
+                    string result = ExecuteCommand(commandInput);
+                    graphics.AddOutput(result);
+                    history.Add(commandInput);
+                }
+
+                graphics.DrawShell(fileSystem.CurrentPath, inputBuffer);
                 return;
             }
 
-            ExecuteCommand(input);
-            history.Add(input);
+            if (key.Key == ConsoleKey.Backspace)
+            {
+                if (inputBuffer.Length > 0)
+                {
+                    inputBuffer = inputBuffer.Substring(0, inputBuffer.Length - 1);
+                }
+
+                graphics.DrawShell(fileSystem.CurrentPath, inputBuffer);
+                return;
+            }
+
+            char c = key.KeyChar;
+
+            if (c != '\0')
+            {
+                inputBuffer += c;
+                graphics.DrawShell(fileSystem.CurrentPath, inputBuffer);
+            }
         }
 
-        private void ExecuteCommand(string input)
+        private string ExecuteCommand(string input)
         {
             string[] parts = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
             if (parts.Length == 0)
-                return;
+            {
+                return "";
+            }
 
             string command = parts[0].ToLower();
 
@@ -66,122 +111,102 @@ namespace DualOS
                 switch (command)
                 {
                     case "guide":
-                        Consola.ShowHelp();
-                        break;
+                        return Consola.GetHelpText();
 
                     case "clear":
-                        Console.Clear();
-                        break;
+                    case "clearvoid":
+                        graphics.ClearOutput();
+                        return "Screen cleared.";
 
                     case "history":
-                        history.Show();
-                        break;
+                        return history.GetHistoryText();
 
                     case "origin":
-                        Console.WriteLine("DualOS v1.0");
-                        break;
+                        return "DualOS v1.0 - Cosmos Graphic Subsystem";
 
                     case "shutdown":
-                        HandleShutdown(parts);
-                        break;
+                        return HandleShutdown(parts);
 
                     case "calc":
-                        Calculadora.Execute(parts);
-                        break;
+                        return Calculadora.ExecuteToString(parts);
 
                     case "disks":
-                        fileSystem.ShowDisks();
-                        break;
+                        return fileSystem.ShowDisks();
 
                     case "peek":
-                        fileSystem.Peek();
-                        break;
+                        return fileSystem.Peek();
 
                     case "forge":
                         if (parts.Length < 2)
                         {
-                            Console.WriteLine("Usage: forge <directory_name>");
+                            return "Usage: forge <directory>";
                         }
-                        else
-                        {
-                            fileSystem.CreateDirectory(parts[1]);
-                        }
-                        break;
+
+                        return fileSystem.CreateDirectory(parts[1]);
 
                     case "wipe":
                         if (parts.Length < 2)
                         {
-                            Console.WriteLine("Usage: wipe <directory_name>");
+                            return "Usage: wipe <directory>";
                         }
-                        else
-                        {
-                            fileSystem.DeleteDirectory(parts[1]);
-                        }
-                        break;
+
+                        return fileSystem.DeleteDirectory(parts[1]);
 
                     case "write":
-                        if (parts.Length < 2)
+                        if (parts.Length < 3)
                         {
-                            Console.WriteLine("Usage: write <filename> <content>");
+                            return "Usage: write <file> <text>";
                         }
-                        else
-                        {
-                            string file = parts[1];
-                            string content = input.Substring(input.IndexOf(file) + file.Length + 1);
-                            fileSystem.WriteFile(file, content);
-                        }
-                        break;
+
+                        string file = parts[1];
+                        string content = input.Substring(input.IndexOf(file) + file.Length + 1);
+                        return fileSystem.WriteFile(file, content);
 
                     case "read":
                         if (parts.Length < 2)
                         {
-                            Console.WriteLine("Usage: read <filename>");
+                            return "Usage: read <file>";
                         }
-                        else
-                        {
-                            fileSystem.ReadFile(parts[1]);
-                        }
-                        break;
+
+                        return fileSystem.ReadFile(parts[1]);
 
                     case "jump":
                         if (parts.Length < 2)
                         {
-                            Console.WriteLine("Usage: jump <directory_path>");
+                            return "Usage: jump <path>";
                         }
-                        else
-                        {
-                            fileSystem.ChangeDirectory(parts[1]);
-                        }
-                        break;
+
+                        return fileSystem.ChangeDirectory(parts[1]);
 
                     default:
-                        Console.WriteLine("Unknown command. Type 'guide' for help.");
-                        break;
+                        return "Unknown command. Type 'guide' for help.";
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error executing command: {ex.Message}");
+                return "Error executing command: " + ex.Message;
             }
         }
 
-        private void HandleShutdown(string[] parts)
+        private string HandleShutdown(string[] parts)
         {
             if (parts.Length < 2)
             {
-                Console.WriteLine("Usage: shutdown off | shutdown reboot");
-                return;
+                return "Usage: shutdown off | shutdown reboot";
             }
 
             switch (parts[1].ToLower())
             {
                 case "off":
                     Sys.Power.Shutdown();
-                    break;
+                    return "Shutting down...";
 
                 case "reboot":
                     Sys.Power.Reboot();
-                    break;
+                    return "Rebooting...";
+
+                default:
+                    return "Invalid option. Use: shutdown off | shutdown reboot";
             }
         }
     }

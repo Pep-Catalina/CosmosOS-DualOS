@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using Cosmos.System.FileSystem.VFS;
 
 namespace DualOS
@@ -8,68 +9,166 @@ namespace DualOS
     {
         public string CurrentPath = @"0:\";
 
-        public void ShowDisks()
+        public string ShowDisks()
         {
+            StringBuilder sb = new StringBuilder();
+
             var disks = VFSManager.GetDisks();
+
+            if (disks == null || disks.Count == 0)
+            {
+                return "No disks found.";
+            }
 
             foreach (var d in disks)
             {
-                Console.WriteLine("Disk: " + d.ToString());
+                sb.AppendLine("Disk: " + d.ToString());
             }
+
+            return sb.ToString();
         }
 
-        public void Peek()
+        public string Peek()
         {
-            Console.WriteLine("Current path: " + CurrentPath);
+            StringBuilder sb = new StringBuilder();
 
-            foreach (var dir in Directory.GetDirectories(CurrentPath))
+            sb.AppendLine("Current path: " + CurrentPath);
+
+            string[] directories = Directory.GetDirectories(CurrentPath);
+            string[] files = Directory.GetFiles(CurrentPath);
+
+            sb.AppendLine("Directories:");
+            if (directories.Length == 0)
             {
-                Console.WriteLine("[DIR] " + Path.GetFileName(dir));
+                sb.AppendLine("  (none)");
             }
-
-            foreach (var file in Directory.GetFiles(CurrentPath))
+            else
             {
-                Console.WriteLine(Path.GetFileName(file));
+                foreach (var dir in directories)
+                {
+                    sb.AppendLine("  [DIR] " + Path.GetFileName(dir));
+                }
             }
+
+            sb.AppendLine("Files:");
+            if (files.Length == 0)
+            {
+                sb.AppendLine("  (none)");
+            }
+            else
+            {
+                foreach (var file in files)
+                {
+                    sb.AppendLine("  " + Path.GetFileName(file));
+                }
+            }
+
+            return sb.ToString();
         }
 
-        public void CreateDirectory(string name)
+        public string CreateDirectory(string name)
         {
-            Directory.CreateDirectory(Path.Combine(CurrentPath, name));
+            string path = Path.Combine(CurrentPath, name);
+            Directory.CreateDirectory(path);
+            return "Directory created: " + path;
         }
 
-        public void DeleteDirectory(string name)
+        public string DeleteDirectory(string name)
         {
-            Directory.Delete(Path.Combine(CurrentPath, name));
+            string path = Path.Combine(CurrentPath, name);
+
+            if (!Directory.Exists(path))
+            {
+                return "Directory does not exist: " + path;
+            }
+
+            Directory.Delete(path);
+            return "Directory deleted: " + path;
         }
 
-        public void WriteFile(string fileName, string content)
+        public string WriteFile(string fileName, string content)
         {
-            File.WriteAllText(Path.Combine(CurrentPath, fileName), content);
+            string path = Path.Combine(CurrentPath, fileName);
+            File.WriteAllText(path, content);
+            return "File written: " + path;
         }
 
-        public void ReadFile(string fileName)
+        public string ReadFile(string fileName)
         {
-            Console.WriteLine(File.ReadAllText(Path.Combine(CurrentPath, fileName)));
+            string path = Path.Combine(CurrentPath, fileName);
+
+            if (!File.Exists(path))
+            {
+                return "File does not exist: " + path;
+            }
+
+            return File.ReadAllText(path);
         }
 
-        public void ChangeDirectory(string target)
+        public string ChangeDirectory(string target)
         {
-            string newPath = target.Contains(@":\")
-                ? target
-                : Path.Combine(CurrentPath, target);
+            string newPath;
 
-            newPath = newPath.Replace('/', '\\');
+            if (target.Contains(@":\"))
+            {
+                newPath = target;
+            }
+            else
+            {
+                newPath = Path.Combine(CurrentPath, target);
+            }
 
-            if (!newPath.EndsWith("\\")) newPath += "\\";
+            newPath = NormalizePath(newPath);
 
             if (!Directory.Exists(newPath))
             {
-                Console.WriteLine("Directory does not exist.");
-                return;
+                return "Directory does not exist: " + newPath;
             }
 
             CurrentPath = newPath;
+            return "Current directory: " + CurrentPath;
+        }
+
+        private string NormalizePath(string path)
+        {
+            path = path.Replace('/', '\\');
+
+            string[] rawParts = path.Split('\\', StringSplitOptions.RemoveEmptyEntries);
+            System.Collections.Generic.List<string> cleanParts = new System.Collections.Generic.List<string>();
+
+            foreach (string part in rawParts)
+            {
+                if (part == ".")
+                {
+                    continue;
+                }
+
+                if (part == "..")
+                {
+                    if (cleanParts.Count > 1)
+                    {
+                        cleanParts.RemoveAt(cleanParts.Count - 1);
+                    }
+
+                    continue;
+                }
+
+                cleanParts.Add(part);
+            }
+
+            if (cleanParts.Count == 0)
+            {
+                return @"0:\";
+            }
+
+            string result = cleanParts[0] + @"\";
+
+            for (int i = 1; i < cleanParts.Count; i++)
+            {
+                result += cleanParts[i] + @"\";
+            }
+
+            return result;
         }
     }
 }

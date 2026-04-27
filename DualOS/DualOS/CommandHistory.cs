@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace DualOS
 {
@@ -10,26 +11,38 @@ namespace DualOS
         public void Add(string command)
         {
             if (string.IsNullOrWhiteSpace(command))
+            {
                 return;
+            }
 
             history.Add(command);
 
             if (history.Count > 5)
+            {
                 history.RemoveAt(0);
+            }
+        }
+
+        public string GetHistoryText()
+        {
+            if (history.Count == 0)
+            {
+                return "No history available.";
+            }
+
+            StringBuilder sb = new StringBuilder();
+
+            for (int i = 0; i < history.Count; i++)
+            {
+                sb.AppendLine(i + ": " + history[i]);
+            }
+
+            return sb.ToString();
         }
 
         public void Show()
         {
-            if (history.Count == 0)
-            {
-                Console.WriteLine("No history available.");
-                return;
-            }
-
-            for (int i = 0; i < history.Count; i++)
-            {
-                Console.WriteLine($"{i}: {history[i]}");
-            }
+            Console.WriteLine(GetHistoryText());
         }
 
         public string GetCommand(string input)
@@ -40,7 +53,6 @@ namespace DualOS
 
                 if (index < 0 || index >= history.Count)
                 {
-                    Console.WriteLine("Invalid history index.");
                     return null;
                 }
 
@@ -48,7 +60,6 @@ namespace DualOS
             }
             catch
             {
-                Console.WriteLine("Invalid history format.");
                 return null;
             }
         }
