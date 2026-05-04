@@ -50,6 +50,7 @@ Compila el projecte des de Visual Studio.
 ## Execució
 
 Un cop compilat, el sistema es pot executar des de l’entorn de COSMOS, habitualment en màquina virtual o en l’entorn de prova configurat pel projecte (VMware).
+Actualment, DualOS utilitza una interfície gràfica bàsica implementada amb Cosmos Graphic Subsystem.
 
 
 ## Estructura del projecte
@@ -65,6 +66,13 @@ DualOS/
 ├── Program.cs
 ├── README.md
 └── DualOS.sln
+├── GraphicsManager.cs
+├── FileSystemManager.cs
+├── CommandHistory.cs
+├── Utilities.cs
+├── consola.cs
+└── Comands/
+    └── calculadora.cs
 ````
 
 ## Arquitectura del sistema
@@ -77,6 +85,7 @@ El codi s'ha reorganitzat en diferents fitxers per millorar la seva llegibilitat
 - `Consola.cs` → Sistema d'ajuda (help)
 - `Calculadora.cs` → Operacions matemàtiques
 - `Utilities.cs` → Funcions auxiliars (logo, etc.)
+- `GraphicsManager.cs` → Gestió de la interfície gràfica amb Cosmos Graphic Subsystem
 
 Aquesta separació permet una millor escalabilitat del sistema i facilita l'afegiment de noves funcionalitats.
 
@@ -119,13 +128,26 @@ Sys.ScanMaps.ESStandardLayout());
 
 Això permet configurar el layout del teclat segons les necessitats de l'usuari.
 
+### Interfície gràfica
+
+S'ha iniciat la transició del sistema cap a Cosmos Graphic Subsystem (CGS).
+
+Funcionalitats implementades:
+- pantalla de benvinguda gràfica
+- logo dibuixat amb formes i colors
+- shell gràfic bàsic
+- panell superior amb informació del sistema
+- panell lateral amb comandes principals
+- zona central per mostrar la sortida de les comandes
+- zona inferior per escriure les comandes
+
 ## Llicència
 
 Aquest projecte està sota la llicència MIT. Consulta el fitxer LICENSE per a més informació.
 
 ## Estat del projecte
 
-Actualment, DualOS es troba en una fase inicial de desenvolupament. Ja disposa d’una base funcional sobre COSMOS i d’una primera estructura de treball, però encara està en procés de creixement i definició de funcionalitats.
+Actualment, DualOS ja disposa d’una base funcional amb sistema de comandes, sistema de fitxers, historial de comandes i una primera interfície gràfica basada en Cosmos Graphic Subsystem.
 <br>
 
 ## Roadmap o millores futures
@@ -137,9 +159,11 @@ Les millores previstes per a DualOS inclouen:
   - crear un sistema de comandes propi
   - millorar l’organització modular del codi
   - afegir configuració d’usuari i opcions del sistema
-  - millorar la interfície visual
   - ampliar la documentació tècnica del projecte
   - afegir noves funcionalitats pròpies d’un sistema operatiu acadèmic
+  - millorar la interfície gràfica basada en Cosmos Graphic Subsystem
+  - afegir més elements visuals al shell gràfic
+  - adaptar més funcionalitats internes al mode gràfic
 
 
 
