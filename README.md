@@ -56,23 +56,30 @@ Actualment, DualOS utilitza una interfície gràfica bàsica implementada amb Co
 ## Estructura del projecte
 
 Una estructura bàsica del projecte pot ser la següent:
-````
+````text
 DualOS/
 │
 ├── assets/
 │   └── logo.png
 │
-├── Kernel.cs
-├── Program.cs
+├── DualOS/
+│   ├── Audios/
+│   ├── Comands/
+│   │   └── calculadora.cs
+│   ├── CommandHistory.cs
+│   ├── FileSystemManager.cs
+│   ├── FtpManager.cs
+│   ├── GraphicShell.cs
+│   ├── GraphicsManager.cs
+│   ├── Kernel.cs
+│   ├── NetworkManager.cs
+│   ├── Utilities.cs
+│   ├── consola.cs
+│   └── DualOS.csproj
+│
 ├── README.md
+├── LISENCE
 └── DualOS.sln
-├── GraphicsManager.cs
-├── FileSystemManager.cs
-├── CommandHistory.cs
-├── Utilities.cs
-├── consola.cs
-└── Comands/
-    └── calculadora.cs
 ````
 
 ## Arquitectura del sistema
@@ -85,7 +92,10 @@ El codi s'ha reorganitzat en diferents fitxers per millorar la seva llegibilitat
 - `Consola.cs` → Sistema d'ajuda (help)
 - `Calculadora.cs` → Operacions matemàtiques
 - `Utilities.cs` → Funcions auxiliars (logo, etc.)
-- `GraphicsManager.cs` → Gestió de la interfície gràfica amb Cosmos Graphic Subsystem
+- `GraphicsManager.cs` → Inicialització i gestió de la interfície gràfica amb Cosmos Graphic Subsystem
+- `GraphicShell.cs` → Disseny i representació visual del shell gràfic
+- `NetworkManager.cs` → Configuració de xarxa i assignació d’IP estàtica
+- `FtpManager.cs` → Preparació inicial del servidor FTP
 
 Aquesta separació permet una millor escalabilitat del sistema i facilita l'afegiment de noves funcionalitats.
 
@@ -130,16 +140,33 @@ Això permet configurar el layout del teclat segons les necessitats de l'usuari.
 
 ### Interfície gràfica
 
-S'ha iniciat la transició del sistema cap a Cosmos Graphic Subsystem (CGS).
+S'ha iniciat la transició cap a Cosmos Graphic Subsystem (CGS).
 
 Funcionalitats implementades:
 - pantalla de benvinguda gràfica
-- logo dibuixat amb formes i colors
+- representació visual del logo i del nom del sistema
 - shell gràfic bàsic
 - panell superior amb informació del sistema
 - panell lateral amb comandes principals
 - zona central per mostrar la sortida de les comandes
-- zona inferior per escriure les comandes
+- zona inferior per escriure comandes
+
+### Xarxa i serveis
+
+S'ha començat la implementació de funcionalitats de xarxa.
+
+Funcionalitats implementades:
+- configuració d’una IP estàtica
+- comanda per consultar la IP configurada
+- preparació inicial del servei FTP
+
+Comandaments:
+- `netconfig <ip> <mask> <gateway>` → configura una IP estàtica
+- `ip` → mostra la IP configurada
+- `ftpstart` → inicia o prepara el servei FTP en fase inicial
+- `ftpstop` → apaga el servei FTP
+- `ftpstatus` → indica l'estat del servei FTP
+
 
 ## Llicència
 
@@ -147,23 +174,28 @@ Aquest projecte està sota la llicència MIT. Consulta el fitxer LICENSE per a m
 
 ## Estat del projecte
 
-Actualment, DualOS ja disposa d’una base funcional amb sistema de comandes, sistema de fitxers, historial de comandes i una primera interfície gràfica basada en Cosmos Graphic Subsystem.
+Actualment, DualOS es troba en una fase inicial-intermèdia de desenvolupament. Ja disposa d’una base funcional sobre COSMOS, un sistema de comandes modular, sistema de fitxers bàsic, historial de comandes, interfície gràfica inicial i una primera implementació de configuració de xarxa.
+
+El servei FTP es troba en fase inicial i actualment està orientat a permetre la connexió bàsica, deixant la funcionalitat completa per a fases posteriors.
 <br>
 
 ## Roadmap o millores futures
 
 Les millores previstes per a DualOS inclouen:
 
-  - definir una pantalla d’inici més completa
-  - afegir menús interactius
-  - crear un sistema de comandes propi
-  - millorar l’organització modular del codi
-  - afegir configuració d’usuari i opcions del sistema
-  - ampliar la documentació tècnica del projecte
-  - afegir noves funcionalitats pròpies d’un sistema operatiu acadèmic
-  - millorar la interfície gràfica basada en Cosmos Graphic Subsystem
-  - afegir més elements visuals al shell gràfic
-  - adaptar més funcionalitats internes al mode gràfic
+- definir una pantalla d’inici més completa
+- afegir menús interactius
+- crear un sistema de comandes propi més avançat
+- millorar l’organització modular del codi
+- millorar la interfície gràfica basada en Cosmos Graphic Subsystem
+- afegir més elements visuals al shell gràfic (panells, colors, disseny)
+- completar la funcionalitat del servidor FTP
+- afegir gestió d’usuaris i permisos per al servei FTP
+- millorar la configuració de xarxa
+- afegir persistència per a la configuració IP
+- implementar comandes de monitoratge del sistema (CPU, memòria, uptime)
+- ampliar la documentació tècnica del projecte
+- afegir suport per funcionalitats addicionals del sistema operatiu
 
 
 
