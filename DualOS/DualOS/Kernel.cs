@@ -11,7 +11,8 @@ namespace DualOS
         private FileSystemManager fileSystem = new FileSystemManager();
         private CommandHistory history = new CommandHistory();
         private GraphicsManager graphics = new GraphicsManager();
-
+        private NetworkManager network = new NetworkManager();
+        private FtpManager ftp = new FtpManager();
         private string inputBuffer = "";
 
         protected override void BeforeRun()
@@ -177,6 +178,26 @@ namespace DualOS
                         }
 
                         return fileSystem.ChangeDirectory(parts[1]);
+
+                    case "netconfig":
+                        if (parts.Length < 4)
+                        {
+                            return "Usage: netconfig <ip> <mask> <gateway>";
+                        }
+
+                        return network.ConfigureStaticIp(parts[1], parts[2], parts[3]);
+
+                    case "ip":
+                        return network.GetCurrentIp();
+
+                    case "ftpstart":
+                        return ftp.StartFtp(fs);
+
+                    case "ftpstop":
+                        return ftp.StopFtp();
+
+                    case "ftpstatus":
+                        return ftp.GetFtpStatus();
 
                     default:
                         return "Unknown command. Type 'guide' for help.";

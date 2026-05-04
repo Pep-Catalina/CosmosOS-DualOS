@@ -23,6 +23,17 @@ namespace DualOS
             sb.AppendLine("  read <file>              - Read file");
 
             sb.AppendLine();
+            sb.AppendLine("Network Commands");
+            sb.AppendLine("  netconfig <ip> <mask> <gateway> - Configure static IP");
+            sb.AppendLine("  ip                       - Show current IP address");
+
+            sb.AppendLine();
+            sb.AppendLine("FTP Commands");
+            sb.AppendLine("  ftpstart                 - Start FTP server (use FileZilla)");
+            sb.AppendLine("  ftpstop                  - Stop FTP server");
+            sb.AppendLine("  ftpstatus                - Show FTP server status");
+
+            sb.AppendLine();
             sb.AppendLine("System Commands");
             sb.AppendLine("  guide                    - Show help");
             sb.AppendLine("  origin                   - Show version");
@@ -51,6 +62,9 @@ namespace DualOS
             sb.AppendLine("  jump docs");
             sb.AppendLine("  write note.txt Hello DualOS");
             sb.AppendLine("  read note.txt");
+            sb.AppendLine("  netconfig 192.168.1.100 255.255.255.0 192.168.1.1");
+            sb.AppendLine("  ip");
+            sb.AppendLine("  ftpstart");
             sb.AppendLine("  history");
             sb.AppendLine("  !0");
 
