@@ -6,15 +6,20 @@ namespace DualOS
 {
     public class CommandHistory
     {
+        // Llista on es guarden les últimes comandes executades
         private List<string> history = new List<string>();
+
+        // Afegeix una nova comanda a l'historial
 
         public void Add(string command)
         {
+            // Comprova que la comanda no sigui buida
             if (string.IsNullOrWhiteSpace(command))
             {
                 return;
             }
 
+            // Guarda la comanda a la llista
             history.Add(command);
 
             if (history.Count > 5)
@@ -23,6 +28,7 @@ namespace DualOS
             }
         }
 
+        // Retorna l'historial en format text
         public string GetHistoryText()
         {
             if (history.Count == 0)
@@ -40,11 +46,14 @@ namespace DualOS
             return sb.ToString();
         }
 
+        // Mostra l'historial directament per consola
         public void Show()
         {
             Console.WriteLine(GetHistoryText());
         }
 
+        // Obté una comanda concreta a partir d'un input
+        // Exemple: "!2" retorna la comanda de la posició 2
         public string GetCommand(string input)
         {
             try

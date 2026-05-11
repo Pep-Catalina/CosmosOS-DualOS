@@ -7,6 +7,7 @@ namespace DualOS
     {
         private bool isRunning = false;
 
+        // Inicia el servidor FTP
         public string StartFtp(CosmosVFS fs)
         {
             if (isRunning)
@@ -30,6 +31,7 @@ namespace DualOS
             }
         }
 
+        // Atura el servidor FTP
         public string StopFtp()
         {
             if (!isRunning)
@@ -48,6 +50,7 @@ namespace DualOS
             }
         }
 
+        // Mostra l'estat actual del servidor FTP
         public string GetFtpStatus()
         {
             if (isRunning)

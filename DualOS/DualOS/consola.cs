@@ -5,6 +5,7 @@ namespace DualOS
 {
     public static class Consola
     {
+        // Genera i retorna el text d'ajuda amb totes les comandes disponibles
         public static string GetHelpText()
         {
             StringBuilder sb = new StringBuilder();
@@ -71,6 +72,7 @@ namespace DualOS
             return sb.ToString();
         }
 
+        // Mostra per consola el text d'ajuda generat
         public static void ShowHelp()
         {
             Console.WriteLine(GetHelpText());

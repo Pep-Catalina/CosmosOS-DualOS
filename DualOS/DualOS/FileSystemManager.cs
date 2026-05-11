@@ -7,8 +7,10 @@ namespace DualOS
 {
     public class FileSystemManager
     {
+        // Guarda la ruta actual del sistema
         public string CurrentPath = @"0:\";
 
+        // Mostra tots els discos disponibles del sistema
         public string ShowDisks()
         {
             StringBuilder sb = new StringBuilder();
@@ -28,6 +30,7 @@ namespace DualOS
             return sb.ToString();
         }
 
+        // Mostra les carpetes i fitxers del directori actual
         public string Peek()
         {
             StringBuilder sb = new StringBuilder();
@@ -66,6 +69,7 @@ namespace DualOS
             return sb.ToString();
         }
 
+        // Crea un nou directori dins la ruta actual
         public string CreateDirectory(string name)
         {
             string path = Path.Combine(CurrentPath, name);
@@ -73,6 +77,7 @@ namespace DualOS
             return "Directory created: " + path;
         }
 
+        // Elimina un directori existent
         public string DeleteDirectory(string name)
         {
             string path = Path.Combine(CurrentPath, name);
@@ -86,6 +91,7 @@ namespace DualOS
             return "Directory deleted: " + path;
         }
 
+        // Escriu contingut dins d'un fitxer
         public string WriteFile(string fileName, string content)
         {
             string path = Path.Combine(CurrentPath, fileName);
@@ -93,6 +99,7 @@ namespace DualOS
             return "File written: " + path;
         }
 
+        // Llegeix i retorna el contingut d'un fitxer
         public string ReadFile(string fileName)
         {
             string path = Path.Combine(CurrentPath, fileName);
@@ -105,6 +112,7 @@ namespace DualOS
             return File.ReadAllText(path);
         }
 
+        // Canvia el directori actual del sistema
         public string ChangeDirectory(string target)
         {
             string newPath;
@@ -129,6 +137,7 @@ namespace DualOS
             return "Current directory: " + CurrentPath;
         }
 
+        // Normalitza una ruta eliminant "." i ".."
         private string NormalizePath(string path)
         {
             path = path.Replace('/', '\\');
