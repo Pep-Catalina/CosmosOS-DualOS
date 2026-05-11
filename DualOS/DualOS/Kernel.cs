@@ -15,7 +15,6 @@ namespace DualOS
         private NetworkManager network = new NetworkManager();
         private FtpManager ftp = new FtpManager();
         private string inputBuffer = "";
-        private Boolean ipConfigured = false;
 
         protected override void BeforeRun()
         {
@@ -120,8 +119,7 @@ namespace DualOS
                 switch (command)
                 {
                     case "guide":
-                        consola.ShowHelp();
-                        return "";
+                        return Consola.GetHelpText();
 
                     case "clear":
                     case "clearvoid":
@@ -194,20 +192,11 @@ namespace DualOS
                             return "Usage: netconfig <ip> <mask> <gateway>";
                         }
 
-                        return network.ConfigureStaticIp(parts[1], parts[2], parts[3]);
+                        string result = network.ConfigureStaticIp(parts[1], parts[2], parts[3]);
+                        return result;
 
                     case "ip":
-                        if(ipConfigured) {
-                            return network.GetCurrentIp();
-                        }
-                        else {
-                            return "⚠️  WARNING: No IP address assigned!\n" +
-                                   "Network interface is not configured.\n\n" +
-                                   "To configure network use:\n" +
-                                   "  netconfig <ip> <subnet_mask> <gateway>\n\n" +
-                                   "Example:\n" +
-                                   "  netconfig 192.168.1.100 255.255.255.0 192.168.1.1";
-                        }
+                        return network.GetCurrentIp();
 
 
                     case "ftpstart":
