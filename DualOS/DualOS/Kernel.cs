@@ -7,21 +7,20 @@ namespace DualOS
 {
     public class Kernel : Sys.Kernel
     {
-        // Gestors principals del sistema operatiu
         private CosmosVFS fs;
         private FileSystemManager fileSystem = new FileSystemManager();
         private CommandHistory history = new CommandHistory();
         private GraphicsManager graphics = new GraphicsManager();
         private NetworkManager network = new NetworkManager();
         private FtpManager ftp = new FtpManager();
+
         private string inputBuffer = "";
 
         protected override void BeforeRun()
         {
             fs = new CosmosVFS();
             VFSManager.RegisterVFS(fs);
-            
-            // Configura el teclat en format espanyol
+
             Sys.KeyboardManager.SetKeyLayout(new Sys.ScanMaps.ESStandardLayout());
 
             graphics.Initialize();
@@ -29,14 +28,14 @@ namespace DualOS
 
             Console.ReadKey(true);
 
-            graphics.AddOutput("DualOS started successfully.");
-            graphics.AddOutput("Type 'guide' to show available commands.");
+            AddSafeOutput("DualOS started successfully.");
+            AddSafeOutput("Type 'guide' to show available commands.");
+
             graphics.DrawShell(fileSystem.CurrentPath, inputBuffer);
         }
 
         protected override void Run()
         {
-            // Llegeix una tecla premuda per l'usuari
             ConsoleKeyInfo key = Console.ReadKey(true);
 
             if (key.Key == ConsoleKey.Enter)
@@ -50,7 +49,7 @@ namespace DualOS
                     return;
                 }
 
-                graphics.AddOutput(fileSystem.CurrentPath + "> " + commandInput);
+                AddSafeOutput(fileSystem.CurrentPath + "> " + commandInput);
 
                 if (commandInput.StartsWith("!"))
                 {
@@ -58,23 +57,23 @@ namespace DualOS
 
                     if (cmd != null)
                     {
-                        graphics.AddOutput("Executing: " + cmd);
+                        AddSafeOutput("Executing: " + cmd);
+
                         string result = ExecuteCommand(cmd);
-                        graphics.AddOutput(result);
+                        AddSafeOutput(result);
+
                         history.Add(cmd);
                     }
                     else
                     {
-                        graphics.AddOutput("Invalid history command.");
+                        AddSafeOutput("Invalid history command.");
                     }
                 }
                 else
                 {
-                    // Executa una comanda normal
                     string result = ExecuteCommand(commandInput);
-                    graphics.AddOutput(result);
+                    AddSafeOutput(result);
 
-                    // Desa la comanda a l'historial
                     history.Add(commandInput);
                 }
 
@@ -114,13 +113,17 @@ namespace DualOS
             string command = parts[0].ToLower();
 
             try
-            {
-                // Comprova quina comanda ha escrit l'usuari
+      {
                 switch (command)
                 {
                     case "guide":
-                        return Consola.GetHelpText();
+                        return Consola.GetHelpBlock1();
 
+                    case "guide2":
+                        return Consola.GetHelpBlock2();
+
+                    case "guide3":
+                        return Consola.GetHelpBlock3();
                     case "clear":
                     case "clearvoid":
                         graphics.ClearOutput();
@@ -147,7 +150,7 @@ namespace DualOS
                     case "forge":
                         if (parts.Length < 2)
                         {
-                            return "Usage: forge <directory>";
+                            return "Usage: forge <name>";
                         }
 
                         return fileSystem.CreateDirectory(parts[1]);
@@ -155,7 +158,7 @@ namespace DualOS
                     case "wipe":
                         if (parts.Length < 2)
                         {
-                            return "Usage: wipe <directory>";
+                            return "Usage: wipe <name>";
                         }
 
                         return fileSystem.DeleteDirectory(parts[1]);
@@ -168,6 +171,7 @@ namespace DualOS
 
                         string file = parts[1];
                         string content = input.Substring(input.IndexOf(file) + file.Length + 1);
+
                         return fileSystem.WriteFile(file, content);
 
                     case "read":
@@ -192,12 +196,10 @@ namespace DualOS
                             return "Usage: netconfig <ip> <mask> <gateway>";
                         }
 
-                        string result = network.ConfigureStaticIp(parts[1], parts[2], parts[3]);
-                        return result;
+                        return network.ConfigureStaticIp(parts[1], parts[2], parts[3]);
 
                     case "ip":
                         return network.GetCurrentIp();
-
 
                     case "ftpstart":
                         return ftp.StartFtp(fs);
@@ -209,13 +211,45 @@ namespace DualOS
                         return ftp.GetFtpStatus();
 
                     default:
-                        return "Unknown command. Type 'guide' for help.";
+                        return "Unknown command." + Environment.NewLine +
+                               "Type 'guide' for help.";
                 }
             }
             catch (Exception ex)
             {
                 return "Error executing command: " + ex.Message;
             }
+        }
+
+        private void AddSafeOutput(string text)
+        {
+            if (text == null || text.Trim() == "")
+            {
+                return;
+            }
+
+            graphics.AddOutput(SanitizeText(text));
+        }
+
+        private string SanitizeText(string text)
+        {
+            string clean = "";
+
+            for (int i = 0; i < text.Length; i++)
+            {
+                char c = text[i];
+
+                if ((c >= 32 && c <= 126) || c == '\n' || c == '\r')
+                {
+                    clean += c;
+                }
+                else
+                {
+                    clean += "?";
+                }
+            }
+
+            return clean;
         }
 
         private string HandleShutdown(string[] parts)
@@ -236,7 +270,6 @@ namespace DualOS
                     return "Rebooting...";
 
                 default:
-                    // Opció no vàlida
                     return "Invalid option. Use: shutdown off | shutdown reboot";
             }
         }

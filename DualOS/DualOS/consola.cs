@@ -5,77 +5,89 @@ namespace DualOS
 {
     public static class Consola
     {
-        // Obtiene el texto de ayuda completo sin pausas
-        public static string GetHelpText()
+        public static string GetHelpBlock1()
         {
             StringBuilder sb = new StringBuilder();
 
-            sb.AppendLine("DualOS Help");
+            sb.AppendLine("DualOS Help - Page 1/3");
             sb.AppendLine("==============================================");
-
             sb.AppendLine();
             sb.AppendLine("File System Commands");
-            sb.AppendLine("  disks                    - Show available disks");
-            sb.AppendLine("  peek                     - List directories and files");
-            sb.AppendLine("  jump <path>              - Change directory");
-            sb.AppendLine("  forge <name>             - Create directory");
-            sb.AppendLine("  wipe <name>              - Delete directory");
-            sb.AppendLine("  write <file> <text>      - Write file");
-            sb.AppendLine("  read <file>              - Read file");
-
+            sb.AppendLine(" disks - Show available disks");
+            sb.AppendLine(" peek - List directories and files");
+            sb.AppendLine(" jump <path> - Change directory");
+            sb.AppendLine(" forge <name> - Create directory");
+            sb.AppendLine(" wipe <name> - Delete directory");
+            sb.AppendLine(" write <file> <text> - Write file");
+            sb.AppendLine(" read <file> - Read file");
             sb.AppendLine();
-            sb.AppendLine("Network Commands");
-            sb.AppendLine("  netconfig <ip> <mask> <gateway> - Configure static IP");
-            sb.AppendLine("  ip                       - Show current IP address");
-
-            sb.AppendLine();
-            sb.AppendLine("FTP Commands");
-            sb.AppendLine("  ftpstart                 - Start FTP server (use FileZilla)");
-            sb.AppendLine("  ftpstop                  - Stop FTP server");
-            sb.AppendLine("  ftpstatus                - Show FTP server status");
-
-            sb.AppendLine();
-            sb.AppendLine("System Commands");
-            sb.AppendLine("  guide                    - Show help");
-            sb.AppendLine("  origin                   - Show version");
-            sb.AppendLine("  clear / clearvoid        - Clear graphical shell");
-            sb.AppendLine("  shutdown off             - Shutdown system");
-            sb.AppendLine("  shutdown reboot          - Restart system");
-
-            sb.AppendLine();
-            sb.AppendLine("Calculator");
-            sb.AppendLine("  calc add a b             - Add numbers");
-            sb.AppendLine("  calc sub a b             - Subtract");
-            sb.AppendLine("  calc mul a b             - Multiply");
-            sb.AppendLine("  calc div a b             - Divide");
-            sb.AppendLine("  calc mod a b             - Modulo");
-            sb.AppendLine("  calc sqrt a              - Square root");
-
-            sb.AppendLine();
-            sb.AppendLine("History");
-            sb.AppendLine("  history                  - Show last 5 commands");
-            sb.AppendLine("  !n                       - Execute command from history");
-
-            sb.AppendLine();
-            sb.AppendLine("Examples");
-            sb.AppendLine("  peek");
-            sb.AppendLine("  forge docs");
-            sb.AppendLine("  jump docs");
-            sb.AppendLine("  write note.txt Hello DualOS");
-            sb.AppendLine("  read note.txt");
-            sb.AppendLine("  netconfig 192.168.1.100 255.255.255.0 192.168.1.1");
-            sb.AppendLine("  ip");
-            sb.AppendLine("  ftpstart");
-            sb.AppendLine("  history");
-            sb.AppendLine("  !0");
+            sb.AppendLine("Type 'guide2' to continue.");
 
             return sb.ToString();
         }
 
-        // Muestra la ayuda en consola
-        public static void ShowHelp()
+        public static string GetHelpBlock2()
         {
-            Console.WriteLine(GetHelpText());
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendLine("DualOS Help - Page 2/3");
+            sb.AppendLine("==============================================");
+            sb.AppendLine();
+            sb.AppendLine("Network Commands");
+            sb.AppendLine(" netconfig <ip> <mask> <gateway> - Configure static IP");
+            sb.AppendLine(" ip - Show current IP address");
+            sb.AppendLine();
+            sb.AppendLine("FTP Commands");
+            sb.AppendLine(" ftpstart - Start FTP server");
+            sb.AppendLine(" ftpstop - Stop FTP server");
+            sb.AppendLine(" ftpstatus - Show FTP server status");
+            sb.AppendLine();
+            sb.AppendLine("System Commands");
+            sb.AppendLine(" guide - Show help page 1");
+            sb.AppendLine(" guide2 - Show help page 2");
+            sb.AppendLine(" guide3 - Show help page 3");
+            sb.AppendLine(" origin - Show version");
+            sb.AppendLine(" clear / clearvoid - Clear graphical shell");
+            sb.AppendLine(" shutdown off - Shutdown system");
+            sb.AppendLine(" shutdown reboot - Restart system");
+            sb.AppendLine();
+            sb.AppendLine("Type 'guide3' to continue.");
+
+            return sb.ToString();
+        }
+
+        public static string GetHelpBlock3()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendLine("DualOS Help - Page 3/3");
+            sb.AppendLine("==============================================");
+            sb.AppendLine();
+            sb.AppendLine("Calculator");
+            sb.AppendLine(" calc add a b - Add numbers");
+            sb.AppendLine(" calc sub a b - Subtract");
+            sb.AppendLine(" calc mul a b - Multiply");
+            sb.AppendLine(" calc div a b - Divide");
+            sb.AppendLine(" calc mod a b - Modulo");
+            sb.AppendLine(" calc sqrt a - Square root");
+            sb.AppendLine();
+            sb.AppendLine("History");
+            sb.AppendLine(" history - Show last 5 commands");
+            sb.AppendLine(" !n - Execute command from history");
+            sb.AppendLine();
+            sb.AppendLine("Examples");
+            sb.AppendLine(" peek");
+            sb.AppendLine(" forge docs");
+            sb.AppendLine(" jump docs");
+            sb.AppendLine(" write note.txt Hello DualOS");
+            sb.AppendLine(" read note.txt");
+            sb.AppendLine(" netconfig 192.168.1.100 255.255.255.0 192.168.1.1");
+            sb.AppendLine(" ip");
+            sb.AppendLine(" ftpstart");
+            sb.AppendLine(" history");
+            sb.AppendLine(" !0");
+
+            return sb.ToString();
         }
     }
 }
