@@ -8,21 +8,27 @@ namespace DualOS
 {
     public class NetworkManager
     {
+        // Indica si la xarxa ja ha estat configurada
         private bool networkConfigured = false;
+        // Guarda la màscara de subxarxa configurada
         private Address currentSubnetMask = null;
+        // Guarda la porta d'enllaç configurada
         private Address currentGateway = null;
 
         public string ConfigureStaticIp(string ip, string mask, string gateway)
         {
             try
             {
+                // Busca la targeta de xarxa anomenada eth0
                 NetworkDevice nic = NetworkDevice.GetDeviceByName("eth0");
 
+                // Si no es troba cap targeta de xarxa, retorna un error
                 if (nic == null)
                 {
                     return "Network device eth0 not found.";
                 }
 
+                // Converteix les dades rebudes en format Address
                 Address ipAddress = ParseAddress(ip);
                 Address subnetMask = ParseAddress(mask);
                 Address gatewayAddress = ParseAddress(gateway);
@@ -46,6 +52,7 @@ namespace DualOS
         {
             try
             {
+                 // Obté la IP actual configurada al sistema
                 var currentIp = NetworkConfiguration.CurrentAddress;
 
                 if (currentIp == null || currentIp.ToString() == "0.0.0.0")
@@ -57,7 +64,8 @@ namespace DualOS
                            "Example:\n" +
                            "  netconfig 192.168.1.100 255.255.255.0 192.168.1.1";
                 }
-
+                
+                // Crea el text amb la informació de la IP actual
                 string info = "IP Address:   " + currentIp.ToString() + "\n";
 
                 if (currentSubnetMask != null)
@@ -69,7 +77,7 @@ namespace DualOS
                 {
                     info += "Gateway:      " + currentGateway.ToString();
                 }
-
+                // Retorna tota la informació de xarxa
                 return info;
             }
             catch (Exception ex)
