@@ -35,7 +35,7 @@ namespace DualOS
             canvas.DrawFilledRectangle(Color.FromArgb(20, 42, 70), 0, 0, Width, 80);
             canvas.DrawFilledRectangle(Color.FromArgb(7, 12, 22), 0, 500, Width, 100);
 
-            int cx = 400;
+            int cx = Width / 2;
             int cy = 230;
 
             canvas.DrawFilledRectangle(Color.FromArgb(0, 120, 255), cx - 90, cy - 90, 180, 14);
@@ -49,9 +49,9 @@ namespace DualOS
             canvas.DrawFilledRectangle(Color.White, cx - 26, cy - 26, 52, 52);
             canvas.DrawRectangle(Color.FromArgb(0, 255, 180), cx - 38, cy - 38, 76, 76);
 
-            DrawText("DualOS", 345, 360, Color.White);
-            DrawText("Cosmos Graphic Subsystem Edition", 285, 385, Color.Cyan);
-            DrawText("Press any key to continue...", 300, 470, Color.LightGray);
+            DrawCenteredText("DualOS", 360, Color.White);
+            DrawCenteredText("Cosmos Graphic Subsystem Edition", 385, Color.Cyan);
+            DrawCenteredText("Press any key to continue...", 470, Color.LightGray);
 
             canvas.Display();
         }
@@ -152,14 +152,7 @@ namespace DualOS
                 Height - HeaderHeight - FooterHeight
             );
 
-            // MAIN
-            canvas.DrawRectangle(
-                Color.FromArgb(0, 150, 200),
-                10,
-                HeaderHeight + 10,
-                SidebarWidth - 20,
-                110
-            );
+            canvas.DrawRectangle(Color.FromArgb(0, 150, 200), 10, HeaderHeight + 10, SidebarWidth - 20, 110);
 
             DrawText("MAIN", 24, HeaderHeight + 22, Color.Cyan);
             DrawText("guide", 24, HeaderHeight + 42, Color.White);
@@ -167,14 +160,7 @@ namespace DualOS
             DrawText("clear", 24, HeaderHeight + 74, Color.White);
             DrawText("origin", 24, HeaderHeight + 90, Color.White);
 
-            // FILES
-            canvas.DrawRectangle(
-                Color.FromArgb(0, 180, 110),
-                10,
-                HeaderHeight + 130,
-                SidebarWidth - 20,
-                110
-            );
+            canvas.DrawRectangle(Color.FromArgb(0, 180, 110), 10, HeaderHeight + 130, SidebarWidth - 20, 110);
 
             DrawText("FILES", 24, HeaderHeight + 142, Color.FromArgb(0, 255, 170));
             DrawText("disks", 24, HeaderHeight + 162, Color.White);
@@ -183,14 +169,7 @@ namespace DualOS
             DrawText("forge/wipe", 24, HeaderHeight + 210, Color.White);
             DrawText("read/write", 24, HeaderHeight + 226, Color.White);
 
-            // NETWORK
-            canvas.DrawRectangle(
-                Color.FromArgb(170, 120, 0),
-                10,
-                HeaderHeight + 250,
-                SidebarWidth - 20,
-                95
-            );
+            canvas.DrawRectangle(Color.FromArgb(170, 120, 0), 10, HeaderHeight + 250, SidebarWidth - 20, 95);
 
             DrawText("NETWORK", 24, HeaderHeight + 262, Color.Yellow);
             DrawText("netconfig", 24, HeaderHeight + 282, Color.White);
@@ -198,30 +177,32 @@ namespace DualOS
             DrawText("ftpstart", 24, HeaderHeight + 314, Color.White);
             DrawText("ftpstatus", 24, HeaderHeight + 330, Color.White);
 
-            // TOOLS
-            canvas.DrawRectangle(
-                Color.FromArgb(110, 80, 170),
-                10,
-                HeaderHeight + 355,
-                SidebarWidth - 20,
-                65
-            );
+            canvas.DrawRectangle(Color.FromArgb(110, 80, 170), 10, HeaderHeight + 355, SidebarWidth - 20, 65);
 
             DrawText("TOOLS", 24, HeaderHeight + 367, Color.FromArgb(190, 160, 255));
             DrawText("calc", 24, HeaderHeight + 387, Color.White);
 
-            // SYSTEM
-            canvas.DrawRectangle(
-                Color.FromArgb(50, 70, 90),
-                10,
-                HeaderHeight + 430,
-                SidebarWidth - 20,
-                70
-            );
+            canvas.DrawRectangle(Color.FromArgb(50, 70, 90), 10, HeaderHeight + 430, SidebarWidth - 20, 70);
 
             DrawText("SYSTEM", 24, HeaderHeight + 442, Color.LightGray);
             DrawText("VFS enabled", 24, HeaderHeight + 462, Color.White);
             DrawText("Keyboard ES", 24, HeaderHeight + 478, Color.White);
+        }
+
+        private void DrawCenteredText(string text, int y, Color color)
+        {
+            if (text == null)
+            {
+                return;
+            }
+
+            text = SanitizeText(text);
+
+            int charWidth = 8;
+            int textWidth = text.Length * charWidth;
+            int x = (Width - textWidth) / 2;
+
+            DrawText(text, x, y, color);
         }
 
         private string SanitizeText(string text)
