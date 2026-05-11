@@ -8,21 +8,27 @@ namespace DualOS
 {
     public class NetworkManager
     {
+        // Indica si la xarxa ja ha estat configurada
         private bool networkConfigured = false;
+        // Guarda la màscara de subxarxa configurada
         private Address currentSubnetMask = null;
+        // Guarda la porta d'enllaç configurada
         private Address currentGateway = null;
 
         public string ConfigureStaticIp(string ip, string mask, string gateway)
         {
             try
             {
+                // Busca la targeta de xarxa anomenada eth0
                 NetworkDevice nic = NetworkDevice.GetDeviceByName("eth0");
 
+                // Si no es troba cap targeta de xarxa, retorna un error
                 if (nic == null)
                 {
                     return "Network device eth0 not found.";
                 }
 
+                // Converteix les dades rebudes en format Address
                 Address ipAddress = ParseAddress(ip);
                 Address subnetMask = ParseAddress(mask);
                 Address gatewayAddress = ParseAddress(gateway);
@@ -34,14 +40,10 @@ namespace DualOS
                 currentGateway = gatewayAddress;
                 networkConfigured = true;
 
-                return "✓ Static IP configured successfully!\n" +
-                       "IP Address:   " + ipAddress.ToString() + "\n" +
-                       "Subnet Mask:  " + subnetMask.ToString() + "\n" +
-                       "Gateway:      " + gatewayAddress.ToString();
+                return "Static IP configured: " + NetworkConfiguration.CurrentAddress.ToString();
             }
             catch (Exception ex)
             {
-                networkConfigured = false;
                 return "Error configuring static IP: " + ex.Message;
             }
         }
@@ -50,29 +52,10 @@ namespace DualOS
         {
             try
             {
-                // Verificar si la red está configurada antes de intentar acceder a propiedades
-                if (!networkConfigured)
-                {
-                    return "⚠️  WARNING: No IP address assigned!\n" +
-                           "Network interface is not configured.\n\n" +
-                           "To configure network use:\n" +
-                           "  netconfig <ip> <subnet_mask> <gateway>\n\n" +
-                           "Example:\n" +
-                           "  netconfig 192.168.1.100 255.255.255.0 192.168.1.1";
-                }
-
-                // Solo intentamos acceder si sabemos que está configurado
+                 // Obté la IP actual configurada al sistema
                 var currentIp = NetworkConfiguration.CurrentAddress;
 
-                if (currentIp == null)
-                {
-                    return "⚠️  WARNING: Network configuration failed!\n" +
-                           "IP address could not be retrieved.";
-                }
-
-                string ipString = currentIp.ToString();
-
-                if (string.IsNullOrEmpty(ipString) || ipString == "0.0.0.0")
+                if (currentIp == null || currentIp.ToString() == "0.0.0.0")
                 {
                     return "⚠️  WARNING: No IP address assigned!\n" +
                            "Network interface is not configured.\n\n" +
@@ -81,8 +64,9 @@ namespace DualOS
                            "Example:\n" +
                            "  netconfig 192.168.1.100 255.255.255.0 192.168.1.1";
                 }
-
-                string info = "IP Address:   " + ipString + "\n";
+                
+                // Crea el text amb la informació de la IP actual
+                string info = "IP Address:   " + currentIp.ToString() + "\n";
 
                 if (currentSubnetMask != null)
                 {
@@ -93,17 +77,8 @@ namespace DualOS
                 {
                     info += "Gateway:      " + currentGateway.ToString();
                 }
-
+                // Retorna tota la informació de xarxa
                 return info;
-            }
-            catch (NullReferenceException)
-            {
-                return "⚠️  WARNING: No IP address assigned!\n" +
-                       "Network interface is not configured.\n\n" +
-                       "To configure network use:\n" +
-                       "  netconfig <ip> <subnet_mask> <gateway>\n\n" +
-                       "Example:\n" +
-                       "  netconfig 192.168.1.100 255.255.255.0 192.168.1.1";
             }
             catch (Exception ex)
             {

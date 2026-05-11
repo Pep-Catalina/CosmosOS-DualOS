@@ -5,11 +5,13 @@ namespace DualOS
 {
     public static class Calculadora
     {
+        // Executa la calculadora i mostra el resultat per consola
         public static void Execute(string[] parts)
         {
             Console.WriteLine(ExecuteToString(parts));
         }
 
+        // Processa l’operació i retorna el resultat en text
         public static string ExecuteToString(string[] parts)
         {
             if (parts.Length < 2)
@@ -44,6 +46,7 @@ namespace DualOS
             }
         }
 
+        // Realitza operacions binàries (suma, resta, multiplicació, divisió, mòdul)
         private static string DoBinaryOperation(string[] parts, string op)
         {
             if (parts.Length < 4)
@@ -97,6 +100,7 @@ namespace DualOS
             return "Result: " + result;
         }
 
+        // Calcula l’arrel quadrada d’un número
         private static string DoSqrt(string[] parts)
         {
             if (parts.Length < 3)
@@ -119,6 +123,7 @@ namespace DualOS
             return "Result: " + Math.Sqrt(num);
         }
 
+        // Mostra com s’ha d’utilitzar la calculadora
         private static string GetUsage()
         {
             StringBuilder sb = new StringBuilder();
