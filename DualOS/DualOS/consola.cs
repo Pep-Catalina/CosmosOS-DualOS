@@ -7,11 +7,14 @@ namespace DualOS
     {
         public static string GetHelpText()
         {
+            // StringBuilder s'utilitza per construir textos llargs de manera eficient
             StringBuilder sb = new StringBuilder();
 
+            // Títol principal de l'ajuda
             sb.AppendLine("DualOS Help");
             sb.AppendLine("==============================================");
-
+            
+            // Apartat de comandes del sistema de fitxers
             sb.AppendLine();
             sb.AppendLine("File System Commands");
             sb.AppendLine("  disks                    - Show available disks");
@@ -22,6 +25,7 @@ namespace DualOS
             sb.AppendLine("  write <file> <text>      - Write file");
             sb.AppendLine("  read <file>              - Read file");
 
+            // Apartat de comandes de xarxa
             sb.AppendLine();
             sb.AppendLine("Network Commands");
             sb.AppendLine("  netconfig <ip> <mask> <gateway> - Configure static IP");
@@ -40,7 +44,8 @@ namespace DualOS
             sb.AppendLine("  clear / clearvoid        - Clear graphical shell");
             sb.AppendLine("  shutdown off             - Shutdown system");
             sb.AppendLine("  shutdown reboot          - Restart system");
-
+            
+            // Apartat de la calculadora
             sb.AppendLine();
             sb.AppendLine("Calculator");
             sb.AppendLine("  calc add a b             - Add numbers");
