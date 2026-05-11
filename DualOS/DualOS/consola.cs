@@ -3,84 +3,81 @@ using System.Text;
 
 namespace DualOS
 {
-    public static class Consola
+    public static class consola
     {
-        // Genera i retorna el text d'ajuda amb totes les comandes disponibles
-        public static string GetHelpText()
+        // Espera a que l'usuari premi ENTER
+        private static void PressEnterToContinue()
         {
-            // StringBuilder s'utilitza per construir textos llargs de manera eficient
-            StringBuilder sb = new StringBuilder();
-
-            // Títol principal de l'ajuda
-            sb.AppendLine("DualOS Help");
-            sb.AppendLine("==============================================");
-            
-            // Apartat de comandes del sistema de fitxers
-            sb.AppendLine();
-            sb.AppendLine("File System Commands");
-            sb.AppendLine("  disks                    - Show available disks");
-            sb.AppendLine("  peek                     - List directories and files");
-            sb.AppendLine("  jump <path>              - Change directory");
-            sb.AppendLine("  forge <name>             - Create directory");
-            sb.AppendLine("  wipe <name>              - Delete directory");
-            sb.AppendLine("  write <file> <text>      - Write file");
-            sb.AppendLine("  read <file>              - Read file");
-
-            // Apartat de comandes de xarxa
-            sb.AppendLine();
-            sb.AppendLine("Network Commands");
-            sb.AppendLine("  netconfig <ip> <mask> <gateway> - Configure static IP");
-            sb.AppendLine("  ip                       - Show current IP address");
-
-            sb.AppendLine();
-            sb.AppendLine("FTP Commands");
-            sb.AppendLine("  ftpstart                 - Start FTP server (use FileZilla)");
-            sb.AppendLine("  ftpstop                  - Stop FTP server");
-            sb.AppendLine("  ftpstatus                - Show FTP server status");
-
-            sb.AppendLine();
-            sb.AppendLine("System Commands");
-            sb.AppendLine("  guide                    - Show help");
-            sb.AppendLine("  origin                   - Show version");
-            sb.AppendLine("  clear / clearvoid        - Clear graphical shell");
-            sb.AppendLine("  shutdown off             - Shutdown system");
-            sb.AppendLine("  shutdown reboot          - Restart system");
-            
-            // Apartat de la calculadora
-            sb.AppendLine();
-            sb.AppendLine("Calculator");
-            sb.AppendLine("  calc add a b             - Add numbers");
-            sb.AppendLine("  calc sub a b             - Subtract");
-            sb.AppendLine("  calc mul a b             - Multiply");
-            sb.AppendLine("  calc div a b             - Divide");
-            sb.AppendLine("  calc mod a b             - Modulo");
-            sb.AppendLine("  calc sqrt a              - Square root");
-
-            sb.AppendLine();
-            sb.AppendLine("History");
-            sb.AppendLine("  history                  - Show last 5 commands");
-            sb.AppendLine("  !n                       - Execute command from history");
-
-            sb.AppendLine();
-            sb.AppendLine("Examples");
-            sb.AppendLine("  peek");
-            sb.AppendLine("  forge docs");
-            sb.AppendLine("  jump docs");
-            sb.AppendLine("  write note.txt Hello DualOS");
-            sb.AppendLine("  read note.txt");
-            sb.AppendLine("  netconfig 192.168.1.100 255.255.255.0 192.168.1.1");
-            sb.AppendLine("  ip");
-            sb.AppendLine("  ftpstart");
-            sb.AppendLine("  history");
-            sb.AppendLine("  !0");
-
-            return sb.ToString();
+            Console.WriteLine();
+            Console.Write("Press ENTER to continue...");
+            Console.ReadLine();
+            Console.Clear();
         }
 
-        // Mostra per consola el text d'ajuda generat
+        // Mostra l'ajuda
         public static void ShowHelp()
         {
-            Console.WriteLine(GetHelpText());
+            Console.WriteLine("DualOS Help");
+            Console.WriteLine("==============================================");
+
+            Console.WriteLine();
+            Console.WriteLine("File System Commands");
+            Console.WriteLine("  disks                    - Show available disks");
+            Console.WriteLine("  peek                     - List directories and files");
+            Console.WriteLine("  jump <path>              - Change directory");
+            Console.WriteLine("  forge <name>             - Create directory");
+            Console.WriteLine("  wipe <name>              - Delete directory");
+            Console.WriteLine("  write <file> <text>      - Write file");
+            Console.WriteLine("  read <file>              - Read file");
+
+            PressEnterToContinue();
+
+            Console.WriteLine("Network Commands");
+            Console.WriteLine("  netconfig <ip> <mask> <gateway> - Configure static IP");
+            Console.WriteLine("  ip                       - Show current IP address");
+
+            Console.WriteLine();
+            Console.WriteLine("FTP Commands");
+            Console.WriteLine("  ftpstart                 - Start FTP server (use FileZilla)");
+            Console.WriteLine("  ftpstop                  - Stop FTP server");
+            Console.WriteLine("  ftpstatus                - Show FTP server status");
+
+            PressEnterToContinue();
+
+            Console.WriteLine("System Commands");
+            Console.WriteLine("  guide                    - Show help");
+            Console.WriteLine("  origin                   - Show version");
+            Console.WriteLine("  clear / clearvoid        - Clear graphical shell");
+            Console.WriteLine("  shutdown off             - Shutdown system");
+            Console.WriteLine("  shutdown reboot          - Restart system");
+
+            Console.WriteLine();
+            Console.WriteLine("Calculator");
+            Console.WriteLine("  calc add a b             - Add numbers");
+            Console.WriteLine("  calc sub a b             - Subtract");
+            Console.WriteLine("  calc mul a b             - Multiply");
+            Console.WriteLine("  calc div a b             - Divide");
+            Console.WriteLine("  calc mod a b             - Modulo");
+            Console.WriteLine("  calc sqrt a              - Square root");
+
+            PressEnterToContinue();
+
+            Console.WriteLine("History");
+            Console.WriteLine("  history                  - Show last 5 commands");
+            Console.WriteLine("  !n                       - Execute command from history");
+
+            Console.WriteLine();
+            Console.WriteLine("Examples");
+            Console.WriteLine("  peek");
+            Console.WriteLine("  forge docs");
+            Console.WriteLine("  jump docs");
+            Console.WriteLine("  write note.txt Hello DualOS");
+            Console.WriteLine("  read note.txt");
+            Console.WriteLine("  netconfig 192.168.1.100 255.255.255.0 192.168.1.1");
+            Console.WriteLine("  ip");
+            Console.WriteLine("  ftpstart");
+            Console.WriteLine("  history");
+            Console.WriteLine("  !0");
         }
     }
 }

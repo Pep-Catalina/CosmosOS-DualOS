@@ -34,10 +34,14 @@ namespace DualOS
                 currentGateway = gatewayAddress;
                 networkConfigured = true;
 
-                return "Static IP configured: " + NetworkConfiguration.CurrentAddress.ToString();
+                return "✓ Static IP configured successfully!\n" +
+                       "IP Address:   " + ipAddress.ToString() + "\n" +
+                       "Subnet Mask:  " + subnetMask.ToString() + "\n" +
+                       "Gateway:      " + gatewayAddress.ToString();
             }
             catch (Exception ex)
             {
+                networkConfigured = false;
                 return "Error configuring static IP: " + ex.Message;
             }
         }
@@ -46,9 +50,8 @@ namespace DualOS
         {
             try
             {
-                var currentIp = NetworkConfiguration.CurrentAddress;
-
-                if (currentIp == null || currentIp.ToString() == "0.0.0.0")
+                // Verificar si la red está configurada antes de intentar acceder a propiedades
+                if (!networkConfigured)
                 {
                     return "⚠️  WARNING: No IP address assigned!\n" +
                            "Network interface is not configured.\n\n" +
@@ -58,7 +61,28 @@ namespace DualOS
                            "  netconfig 192.168.1.100 255.255.255.0 192.168.1.1";
                 }
 
-                string info = "IP Address:   " + currentIp.ToString() + "\n";
+                // Solo intentamos acceder si sabemos que está configurado
+                var currentIp = NetworkConfiguration.CurrentAddress;
+
+                if (currentIp == null)
+                {
+                    return "⚠️  WARNING: Network configuration failed!\n" +
+                           "IP address could not be retrieved.";
+                }
+
+                string ipString = currentIp.ToString();
+
+                if (string.IsNullOrEmpty(ipString) || ipString == "0.0.0.0")
+                {
+                    return "⚠️  WARNING: No IP address assigned!\n" +
+                           "Network interface is not configured.\n\n" +
+                           "To configure network use:\n" +
+                           "  netconfig <ip> <subnet_mask> <gateway>\n\n" +
+                           "Example:\n" +
+                           "  netconfig 192.168.1.100 255.255.255.0 192.168.1.1";
+                }
+
+                string info = "IP Address:   " + ipString + "\n";
 
                 if (currentSubnetMask != null)
                 {
@@ -71,6 +95,15 @@ namespace DualOS
                 }
 
                 return info;
+            }
+            catch (NullReferenceException)
+            {
+                return "⚠️  WARNING: No IP address assigned!\n" +
+                       "Network interface is not configured.\n\n" +
+                       "To configure network use:\n" +
+                       "  netconfig <ip> <subnet_mask> <gateway>\n\n" +
+                       "Example:\n" +
+                       "  netconfig 192.168.1.100 255.255.255.0 192.168.1.1";
             }
             catch (Exception ex)
             {
