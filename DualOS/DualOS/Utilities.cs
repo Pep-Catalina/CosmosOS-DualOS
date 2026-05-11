@@ -6,8 +6,10 @@ namespace DualOS
     {
         public static void PrintDualOSLogo()
         {
+            // Neteja la consola abans de mostrar el logo
             Console.Clear();
-
+            
+            // Canvia el color del text a blau
             Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine("              *****            ");
             Console.WriteLine("         *************         ");
@@ -35,8 +37,11 @@ namespace DualOS
 
             Console.WriteLine();
 
+            // Escriu la paraula "Dual" en blau
             Console.ForegroundColor = ConsoleColor.Blue;
             Console.Write("   Dual");
+            
+            // Escriu la paraula "OS" en verd
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("OS");
 
