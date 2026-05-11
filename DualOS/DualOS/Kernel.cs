@@ -7,6 +7,7 @@ namespace DualOS
 {
     public class Kernel : Sys.Kernel
     {
+        // Gestors principals del sistema operatiu
         private CosmosVFS fs;
         private FileSystemManager fileSystem = new FileSystemManager();
         private CommandHistory history = new CommandHistory();
@@ -19,7 +20,8 @@ namespace DualOS
         {
             fs = new CosmosVFS();
             VFSManager.RegisterVFS(fs);
-
+            
+            // Configura el teclat en format espanyol
             Sys.KeyboardManager.SetKeyLayout(new Sys.ScanMaps.ESStandardLayout());
 
             graphics.Initialize();
@@ -34,6 +36,7 @@ namespace DualOS
 
         protected override void Run()
         {
+            // Llegeix una tecla premuda per l'usuari
             ConsoleKeyInfo key = Console.ReadKey(true);
 
             if (key.Key == ConsoleKey.Enter)
@@ -67,8 +70,11 @@ namespace DualOS
                 }
                 else
                 {
+                    // Executa una comanda normal
                     string result = ExecuteCommand(commandInput);
                     graphics.AddOutput(result);
+
+                    // Desa la comanda a l'historial
                     history.Add(commandInput);
                 }
 
@@ -109,6 +115,7 @@ namespace DualOS
 
             try
             {
+                // Comprova quina comanda ha escrit l'usuari
                 switch (command)
                 {
                     case "guide":
@@ -227,6 +234,7 @@ namespace DualOS
                     return "Rebooting...";
 
                 default:
+                    // Opció no vàlida
                     return "Invalid option. Use: shutdown off | shutdown reboot";
             }
         }
